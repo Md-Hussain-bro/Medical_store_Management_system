@@ -610,14 +610,4 @@ def internal_error(error):
 
 if __name__ == '__main__':
     init_db()
-
-    print("\n" + "="*50)
-    print("Medical Store Management System")
-    print("="*50)
-    print("Open: http://127.0.0.1:5000")
-    print("Admin: admin / admin123")
-    print("Staff: staff / staff123")
-    print("="*50 + "\n")
-
-    webbrowser.open("http://127.0.0.1:5000")
-    app.run(debug=False, host='127.0.0.1', port=5000)
+    app.run()
