@@ -1,0 +1,274 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Medical Store Management{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<!-- Statistics Cards -->
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Total Medicines</h6>
+                        <h2 class="mb-0">{{ total_medicines }}</h2>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-capsule"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="{{ url_for('inventory') }}" class="text-white text-decoration-none small">
+                    View Inventory <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card bg-success text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Today's Revenue</h6>
+                        <h2 class="mb-0">₹{{ "%.2f"|format(today_revenue) }}</h2>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-currency-rupee"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <span class="text-white small">{{ today_sales_count }} sales today</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card bg-warning text-dark h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Low Stock Items</h6>
+                        <h2 class="mb-0">{{ low_stock_count }}</h2>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-exclamation-triangle"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="{{ url_for('inventory') }}?low_stock=1" class="text-dark text-decoration-none small">
+                    View Low Stock <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-xl-3 col-md-6">
+        <div class="card stat-card bg-danger text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-uppercase mb-1">Expiring Soon</h6>
+                        <h2 class="mb-0">{{ expiring_count }}</h2>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-calendar-x"></i>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer bg-transparent border-0">
+                <a href="{{ url_for('expiry_report') }}" class="text-white text-decoration-none small">
+                    View Report <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Stock Value Card -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm bg-gradient-info">
+            <div class="card-body py-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h4 class="text-primary mb-1">
+                            <i class="bi bi-box-seam"></i> Total Stock Value
+                        </h4>
+                        <h2 class="display-6 mb-0">₹{{ "%.2f"|format(total_stock_value) }}</h2>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ url_for('stock_report') }}" class="btn btn-primary">
+                            <i class="bi bi-bar-chart"></i> View Stock Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <!-- Low Stock Alert -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">
+                    <i class="bi bi-exclamation-triangle"></i> Low Stock Alert
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if low_stock_medicines %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Batch No</th>
+                                    <th class="text-center">Stock</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for medicine in low_stock_medicines[:5] %}
+                                <tr>
+                                    <td>{{ medicine.name }}</td>
+                                    <td><code>{{ medicine.batch_no }}</code></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-danger">{{ medicine.quantity }}</span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if low_stock_medicines|length > 5 %}
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('inventory') }}" class="btn btn-sm btn-outline-warning">
+                                View All ({{ low_stock_medicines|length }})
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                        <p class="text-muted mb-0 mt-2">All medicines are well stocked!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Expiring Soon Alert -->
+    <div class="col-lg-6">
+        <div class="card h-100">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">
+                    <i class="bi bi-calendar-x"></i> Expiring Within 30 Days
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if expiring_medicines %}
+                    <div class="table-responsive">
+                        <table class="table table-sm table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Medicine</th>
+                                    <th>Batch No</th>
+                                    <th class="text-center">Expiry</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for medicine in expiring_medicines[:5] %}
+                                <tr>
+                                    <td>{{ medicine.name }}</td>
+                                    <td><code>{{ medicine.batch_no }}</code></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-danger">
+                                            {{ medicine.expiry_date.strftime('%d/%m/%Y') }}
+                                        </span>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% if expiring_medicines|length > 5 %}
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('expiry_report') }}" class="btn btn-sm btn-outline-danger">
+                                View All ({{ expiring_medicines|length }})
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                        <p class="text-muted mb-0 mt-2">No medicines expiring soon!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Sales -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                    <i class="bi bi-receipt"></i> Recent Sales
+                </h5>
+                <a href="{{ url_for('sales') }}" class="btn btn-primary btn-sm">
+                    <i class="bi bi-plus"></i> New Sale
+                </a>
+            </div>
+            <div class="card-body">
+                {% if recent_sales %}
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Invoice No</th>
+                                    <th>Date & Time</th>
+                                    <th>Customer</th>
+                                    <th>Items</th>
+                                    <th class="text-end">Amount</th>
+                                    <th class="text-center">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for sale in recent_sales %}
+                                <tr>
+                                    <td><strong>{{ sale.invoice_no }}</strong></td>
+                                    <td>{{ sale.sale_date.strftime('%d/%m/%Y %I:%M %p') }}</td>
+                                    <td>{{ sale.customer_name or 'Walk-in Customer' }}</td>
+                                    <td>{{ sale.items|length }} item(s)</td>
+                                    <td class="text-end">
+                                        <strong>₹{{ "%.2f"|format(sale.total_amount) }}</strong>
+                                    </td>
+                                    <td class="text-center">
+                                        <a href="{{ url_for('view_bill', sale_id=sale.id) }}" 
+                                           class="btn btn-sm btn-outline-primary" target="_blank">
+                                            <i class="bi bi-printer"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="bi bi-cart-x text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mb-0 mt-2">No sales yet. Start selling!</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

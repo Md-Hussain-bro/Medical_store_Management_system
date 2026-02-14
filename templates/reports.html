@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Reports - Medical Store Management{% endblock %}
+{% block page_title %}Reports{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 report-card">
+            <div class="card-body text-center">
+                <div class="report-icon bg-primary text-white mb-3">
+                    <i class="bi bi-calendar-day"></i>
+                </div>
+                <h5>Daily Sales Report</h5>
+                <p class="text-muted">View today's sales with total revenue</p>
+                <a href="{{ url_for('daily_report') }}" class="btn btn-primary">
+                    <i class="bi bi-arrow-right"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 report-card">
+            <div class="card-body text-center">
+                <div class="report-icon bg-success text-white mb-3">
+                    <i class="bi bi-calendar-range"></i>
+                </div>
+                <h5>Date Range Report</h5>
+                <p class="text-muted">Sales report for custom date range</p>
+                <a href="{{ url_for('date_range_report') }}" class="btn btn-success">
+                    <i class="bi bi-arrow-right"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 report-card">
+            <div class="card-body text-center">
+                <div class="report-icon bg-info text-white mb-3">
+                    <i class="bi bi-box-seam"></i>
+                </div>
+                <h5>Stock Report</h5>
+                <p class="text-muted">Current stock value and inventory</p>
+                <a href="{{ url_for('stock_report') }}" class="btn btn-info">
+                    <i class="bi bi-arrow-right"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 col-lg-3">
+        <div class="card h-100 report-card">
+            <div class="card-body text-center">
+                <div class="report-icon bg-danger text-white mb-3">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <h5>Expiry Report</h5>
+                <p class="text-muted">Medicines expiring within 30 days</p>
+                <a href="{{ url_for('expiry_report') }}" class="btn btn-danger">
+                    <i class="bi bi-arrow-right"></i> View Report
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+.report-card {
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.report-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+}
+
+.report-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+}
+</style>
+{% endblock %}
