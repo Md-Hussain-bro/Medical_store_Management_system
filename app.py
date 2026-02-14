@@ -37,7 +37,7 @@ app = Flask(
 
 
 # Configuration
-app.config['SECRET_KEY'] = '9f3c1a2d4e6b8a0f9c7d2e1b4a6f8c0d9e2b7a4c1f5d6e8b9a0c3d4e'
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY')
 
 os.makedirs(app.instance_path, exist_ok=True)
 
