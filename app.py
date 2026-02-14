@@ -47,17 +47,12 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize extensions
 db.init_app(app)
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
 login_manager.login_message = 'Please login to access this page.'
 login_manager.login_message_category = 'warning'
-
-
-# Context processor for templates
-@app.context_processor
-def inject_now():
-    return {'now': datetime.now(), 'today': date.today()}
 
 
 @login_manager.user_loader
@@ -68,24 +63,33 @@ def load_user(user_id):
 
 def init_db():
     """Initialize database and create default users"""
-    with app.app_context():
-        db.create_all()
-        
-        # Create default admin user if not exists
-        if not User.query.filter_by(username='admin').first():
-            admin = User(username='admin', role='admin')
-            admin.set_password('admin123')
-            db.session.add(admin)
-        
-        # Create default staff user if not exists
-        if not User.query.filter_by(username='staff').first():
-            staff = User(username='staff', role='staff')
-            staff.set_password('staff123')
-            db.session.add(staff)
-        
-        db.session.commit()
-        print("Database initialized successfully!")
+    db.create_all()
 
+    # Create default admin user
+    if not User.query.filter_by(username='admin').first():
+        admin = User(username='admin', role='admin')
+        admin.set_password('admin123')
+        db.session.add(admin)
+
+    # Create default staff user
+    if not User.query.filter_by(username='staff').first():
+        staff = User(username='staff', role='staff')
+        staff.set_password('staff123')
+        db.session.add(staff)
+
+    db.session.commit()
+    print("Database initialized successfully!")
+
+
+# 🔥 This runs in BOTH local and Gunicorn
+with app.app_context():
+    init_db()
+
+
+# Context processor
+@app.context_processor
+def inject_now():
+    return {'now': datetime.now(), 'today': date.today()}
 
 # ==================== AUTHENTICATION ROUTES ====================
 
@@ -609,7 +613,6 @@ def internal_error(error):
 # ==================== MAIN ====================
 
 if __name__ == '__main__':
-    init_db()
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port)
 
