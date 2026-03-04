@@ -37,7 +37,7 @@ app = Flask(
 
 
 # Configuration
-app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'dev-secret-key'
 print("SECRET_KEY from ENV:", os.environ.get("SECRET_KEY"))
 print("SECRET_KEY used by Flask:", app.config['SECRET_KEY'])
 os.makedirs(app.instance_path, exist_ok=True)
