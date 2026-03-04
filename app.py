@@ -38,7 +38,8 @@ app = Flask(
 
 # Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev-secret-key')
-
+print("SECRET_KEY from ENV:", os.environ.get("SECRET_KEY"))
+print("SECRET_KEY used by Flask:", app.config['SECRET_KEY'])
 os.makedirs(app.instance_path, exist_ok=True)
 
 db_path = os.path.join(app.instance_path, "pharmacy.db")
