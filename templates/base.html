@@ -20,6 +20,8 @@
             display: flex;
             min-height: 100vh;
         }
+
+        /* ── Sidebar ── */
         .sidebar {
             width: var(--sidebar-width);
             min-height: 100vh;
@@ -28,6 +30,8 @@
             left: 0;
             top: 0;
             z-index: 100;
+            display: flex;
+            flex-direction: column;
         }
         .sidebar-header {
             padding: 20px;
@@ -46,6 +50,7 @@
         }
         .sidebar .nav {
             padding: 15px 0;
+            flex: 1;
         }
         .sidebar .nav-link {
             color: rgba(255,255,255,0.8);
@@ -66,15 +71,21 @@
             font-size: 1.1rem;
             width: 24px;
         }
+        .sidebar .nav-section-label {
+            color: rgba(255,255,255,0.4);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 15px 20px 5px 20px;
+        }
         .sidebar-footer {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
             padding: 15px;
             border-top: 1px solid rgba(255,255,255,0.1);
             color: white;
             text-align: center;
         }
+
+        /* ── Main Content ── */
         .main-content {
             margin-left: var(--sidebar-width);
             width: calc(100% - var(--sidebar-width));
@@ -91,6 +102,8 @@
         .content-area {
             padding: 25px;
         }
+
+        /* ── Cards ── */
         .card {
             border: none;
             border-radius: 10px;
@@ -111,59 +124,131 @@
         .stat-card:hover {
             transform: translateY(-3px);
         }
+
+        /* ── Table row highlights ── */
         .table-danger {
             background-color: #ffe5e5 !important;
         }
         .table-warning {
             background-color: #fff8e5 !important;
         }
+
+        /* ── Login page (no sidebar) ── */
+        .login-body {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* ── Responsive ── */
+        @media (max-width: 768px) {
+            :root { --sidebar-width: 0px; }
+            .sidebar { transform: translateX(-100%); transition: transform 0.3s; }
+            .sidebar.show { transform: translateX(0); width: 250px; }
+            .main-content { margin-left: 0; width: 100%; }
+            .sidebar-toggle { display: inline-block !important; }
+        }
+        @media (min-width: 769px) {
+            .sidebar-toggle { display: none !important; }
+        }
     </style>
     {% block extra_css %}{% endblock %}
 </head>
 <body>
+
+{% if current_user.is_authenticated %}
+    {# ─────────── AUTHENTICATED LAYOUT (sidebar + main) ─────────── #}
     <div class="wrapper">
+
         <!-- Sidebar -->
-        <nav class="sidebar">
+        <nav class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <h3><i class="bi bi-hospital"></i> PharmaCare</h3>
-                <p>Medical Store</p>
+                {% if current_user.is_superadmin %}
+                    <p>Platform Admin</p>
+                {% elif current_user.store %}
+                    <p>{{ current_user.store.name }}</p>
+                {% else %}
+                    <p>Medical Store</p>
+                {% endif %}
             </div>
-            
+
             <ul class="nav flex-column">
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}" 
-                       href="{{ url_for('dashboard') }}">
-                        <i class="bi bi-speedometer2"></i> Dashboard
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'inventory' in request.endpoint or 'medicine' in request.endpoint %}active{% endif %}" 
-                       href="{{ url_for('inventory') }}">
-                        <i class="bi bi-capsule"></i> Inventory
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if request.endpoint == 'sales' %}active{% endif %}" 
-                       href="{{ url_for('sales') }}">
-                        <i class="bi bi-cart3"></i> Sales
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link {% if 'report' in request.endpoint %}active{% endif %}" 
-                       href="{{ url_for('reports') }}">
-                        <i class="bi bi-graph-up"></i> Reports
-                    </a>
-                </li>
+
+                {% if current_user.is_superadmin %}
+                    {# ── Superadmin Navigation ── #}
+                    <div class="nav-section-label">Administration</div>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
+                           href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint in ['admin_stores', 'admin_add_store', 'admin_store_users'] %}active{% endif %}"
+                           href="{{ url_for('admin_stores') }}">
+                            <i class="bi bi-shop"></i> Stores
+                        </a>
+                    </li>
+
+                {% else %}
+                    {# ── Store User Navigation ── #}
+                    <div class="nav-section-label">Main Menu</div>
+
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
+                           href="{{ url_for('dashboard') }}">
+                            <i class="bi bi-speedometer2"></i> Dashboard
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint in ['inventory', 'add_medicine', 'edit_medicine'] %}active{% endif %}"
+                           href="{{ url_for('inventory') }}">
+                            <i class="bi bi-capsule"></i> Inventory
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint in ['sales', 'view_bill'] %}active{% endif %}"
+                           href="{{ url_for('sales') }}">
+                            <i class="bi bi-cart3"></i> Sales
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {% if request.endpoint in ['reports', 'daily_report', 'date_range_report', 'stock_report', 'expiry_report'] %}active{% endif %}"
+                           href="{{ url_for('reports') }}">
+                            <i class="bi bi-graph-up"></i> Reports
+                        </a>
+                    </li>
+
+                    {% if current_user.is_owner %}
+                        <div class="nav-section-label">Management</div>
+                        <li class="nav-item">
+                            <a class="nav-link {% if request.endpoint in ['manage_users', 'add_user'] %}active{% endif %}"
+                               href="{{ url_for('manage_users') }}">
+                                <i class="bi bi-people"></i> Staff
+                            </a>
+                        </li>
+                    {% endif %}
+
+                {% endif %}
             </ul>
-            
+
+            <!-- Sidebar Footer -->
             <div class="sidebar-footer">
                 <small>Logged in as:</small><br>
-                <strong>{{ current_user.username }}</strong><br>
-                <span class="badge bg-{{ 'primary' if current_user.role == 'admin' else 'secondary' }} mt-1">
-                    {{ current_user.role }}
-                </span>
+                <strong>{{ current_user.full_name or current_user.username }}</strong><br>
+                {% if current_user.is_superadmin %}
+                    <span class="badge bg-danger mt-1">Superadmin</span>
+                {% elif current_user.is_owner %}
+                    <span class="badge bg-primary mt-1">Owner</span>
+                {% else %}
+                    <span class="badge bg-secondary mt-1">Staff</span>
+                {% endif %}
                 <br>
-                <a href="{{ url_for('logout') }}" class="btn btn-danger btn-sm w-100 mt-2">
+                <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm w-100 mt-2">
                     <i class="bi bi-box-arrow-right"></i> Logout
                 </a>
             </div>
@@ -171,32 +256,81 @@
 
         <!-- Main Content -->
         <div class="main-content">
+            <!-- Top Navbar -->
             <div class="top-navbar">
-                <h4 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
-                <span class="text-muted">
-                    <i class="bi bi-calendar3"></i> {{ now.strftime('%d %b %Y') }}
-                </span>
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-outline-secondary me-3 sidebar-toggle"
+                            onclick="document.getElementById('sidebar').classList.toggle('show')">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <h4 class="mb-0">{% block page_title %}Dashboard{% endblock %}</h4>
+                </div>
+                <div class="d-flex align-items-center">
+                    {% if not current_user.is_superadmin and current_user.store %}
+                        <span class="badge bg-light text-dark me-3">
+                            <i class="bi bi-shop"></i> {{ current_user.store.name }}
+                        </span>
+                    {% endif %}
+                    <span class="text-muted">
+                        <i class="bi bi-calendar3"></i> {{ now.strftime('%d %b %Y') }}
+                    </span>
+                </div>
             </div>
-            
+
+            <!-- Content Area -->
             <div class="content-area">
-                <!-- Flash Messages -->
+                {# ── Flash Messages ── #}
                 {% with messages = get_flashed_messages(with_categories=true) %}
                     {% if messages %}
                         {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show">
+                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                                {% if category == 'success' %}
+                                    <i class="bi bi-check-circle-fill me-1"></i>
+                                {% elif category == 'danger' %}
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                {% elif category == 'warning' %}
+                                    <i class="bi bi-exclamation-circle-fill me-1"></i>
+                                {% elif category == 'info' %}
+                                    <i class="bi bi-info-circle-fill me-1"></i>
+                                {% endif %}
                                 {{ message }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                             </div>
                         {% endfor %}
                     {% endif %}
                 {% endwith %}
-                
+
                 {% block content %}{% endblock %}
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    {% block extra_js %}{% endblock %}
+{% else %}
+    {# ─────────── UNAUTHENTICATED LAYOUT (login page, no sidebar) ─────────── #}
+    <div class="login-body">
+        <div class="container">
+            {# ── Flash Messages on login page ── #}
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    <div class="row justify-content-center mb-3">
+                        <div class="col-md-5">
+                            {% for category, message in messages %}
+                                <div class="alert alert-{{ category }} alert-dismissible fade show">
+                                    {{ message }}
+                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endwith %}
+
+            {% block content_public %}{% endblock %}
+        </div>
+    </div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+{% block extra_js %}{% endblock %}
 </body>
 </html>
