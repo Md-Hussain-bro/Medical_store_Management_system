@@ -682,14 +682,13 @@ def sales():
 @app.route('/api/search-medicine')
 @store_required
 def search_medicine():
-    """Search medicines - filtered by store_id"""
+    """Search medicines - filtered by store_id, returns type info for unit selling"""
     sid = current_user.store_id
     query = request.args.get('q', '').strip()
 
     if len(query) < 1:
         return jsonify([])
 
-    # ── FIX 3: .is_(True) ──
     medicines = Medicine.query.filter(
         Medicine.is_active.is_(True),
         Medicine.store_id == sid,
@@ -708,14 +707,16 @@ def search_medicine():
         'batch_no': m.batch_no,
         'quantity': m.quantity,
         'selling_price': m.selling_price,
-        'expiry_date': m.expiry_date.strftime('%Y-%m-%d')
+        'expiry_date': m.expiry_date.strftime('%Y-%m-%d'),
+        'medicine_type': m.medicine_type,
+        'units_per_pack': m.units_per_pack
     } for m in medicines])
 
 
 @app.route('/api/process-sale', methods=['POST'])
 @store_required
 def process_sale():
-    """Process a sale - store-safe medicine lookups"""
+    """Process a sale - supports unit-level selling for tablets/capsules"""
     try:
         sid = current_user.store_id
         data = request.get_json()
@@ -725,7 +726,7 @@ def process_sale():
         if not cart_items:
             return jsonify({'success': False, 'message': 'Cart is empty'})
 
-        # ── FIX 1: Store-safe lookup for each cart item ──
+        # ── Validation pass ──
         for item in cart_items:
             medicine = Medicine.query.filter_by(
                 id=item['medicine_id'],
@@ -736,13 +737,40 @@ def process_sale():
                     'success': False,
                     'message': 'Invalid medicine selection'
                 })
-            if medicine.quantity < item['quantity']:
-                return jsonify({
-                    'success': False,
-                    'message': f'Insufficient stock for {medicine.name}'
-                })
 
-        # Create sale
+            # Determine how many individual units are being sold
+            units_sold = item.get('units', 0) or 0
+            packs_sold = item.get('quantity', 0) or 0
+
+            if medicine.is_countable and units_sold > 0:
+                # Selling individual tablets/capsules
+                # Stock is stored as total individual units for countable items
+                if units_sold < 1:
+                    return jsonify({
+                        'success': False,
+                        'message': f'At least 1 unit required for {medicine.name}'
+                    })
+                if units_sold > medicine.quantity:
+                    return jsonify({
+                        'success': False,
+                        'message': f'Insufficient stock for {medicine.name}. '
+                                   f'Available: {medicine.quantity} units'
+                    })
+            else:
+                # Selling by packs (non-countable or no units specified)
+                if packs_sold < 1:
+                    return jsonify({
+                        'success': False,
+                        'message': f'At least 1 pack required for {medicine.name}'
+                    })
+                if packs_sold > medicine.quantity:
+                    return jsonify({
+                        'success': False,
+                        'message': f'Insufficient stock for {medicine.name}. '
+                                   f'Available: {medicine.quantity} packs'
+                    })
+
+        # ── Create sale ──
         invoice_no = Sale.generate_invoice_no(sid)
         total_amount = sum(item['subtotal'] for item in cart_items)
 
@@ -756,23 +784,34 @@ def process_sale():
         db.session.add(sale)
         db.session.flush()
 
-        # ── FIX 1: Store-safe lookup when reducing stock ──
+        # ── Create sale items and deduct stock ──
         for item in cart_items:
             medicine = Medicine.query.filter_by(
                 id=item['medicine_id'],
                 store_id=sid
             ).first()
 
+            units_sold = item.get('units', 0) or 0
+            packs_sold = item.get('quantity', 0) or 0
+
+            # Determine the quantity to record and stock to deduct
+            if medicine.is_countable and units_sold > 0:
+                record_quantity = units_sold
+                stock_deduction = units_sold
+            else:
+                record_quantity = packs_sold
+                stock_deduction = packs_sold
+
             sale_item = SaleItem(
                 sale_id=sale.id,
                 store_id=sid,
                 medicine_id=item['medicine_id'],
-                quantity=item['quantity'],
+                quantity=record_quantity,
                 unit_price=item['unit_price'],
                 subtotal=item['subtotal']
             )
             db.session.add(sale_item)
-            medicine.quantity -= item['quantity']
+            medicine.quantity -= stock_deduction
 
         db.session.commit()
 
