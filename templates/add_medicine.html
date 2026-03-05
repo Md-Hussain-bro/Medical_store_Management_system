@@ -1,39 +1,43 @@
 {% extends "base.html" %}
 
-{% block title %}Add Medicine - PharmaCare{% endblock %}
+{% block title %}Add Medicine - Medical Store Management{% endblock %}
 {% block page_title %}Add New Medicine{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-10">
+    <div class="col-lg-8">
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-plus-circle"></i> Add New Medicine</h5>
+                <h5 class="mb-0">
+                    <i class="bi bi-plus-circle"></i> Add New Medicine
+                </h5>
             </div>
             <div class="card-body">
-                <form method="POST" id="medicineForm">
-                    <div class="row">
-                        <!-- Medicine Name -->
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Medicine Name <span class="text-danger">*</span></label>
-                            <input type="text" name="name" class="form-control" required 
-                                   placeholder="Enter medicine name">
+                <form method="POST" id="addMedicineForm">
+                    <!-- Medicine Name & Generic Name -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="name" class="form-label">
+                                Medicine Name <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="name" id="name" class="form-control"
+                                   required placeholder="e.g., Paracetamol 500mg">
                         </div>
-                        
-                        <!-- Generic Name -->
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Generic Name</label>
-                            <input type="text" name="generic_name" class="form-control"
-                                   placeholder="Enter generic name">
+                        <div class="col-md-6">
+                            <label for="generic_name" class="form-label">Generic Name</label>
+                            <input type="text" name="generic_name" id="generic_name"
+                                   class="form-control" placeholder="e.g., Acetaminophen">
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <!-- Medicine Type -->
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Medicine Type <span class="text-danger">*</span></label>
-                            <select name="medicine_type" id="medicineType" class="form-select" required>
-                                <option value="">-- Select Type --</option>
+
+                    <!-- Medicine Type & Units Per Pack -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="medicine_type" class="form-label">
+                                Medicine Type <span class="text-danger">*</span>
+                            </label>
+                            <select name="medicine_type" id="medicine_type" class="form-select"
+                                    onchange="toggleUnitsPerPack()">
                                 <option value="tablet">Tablet</option>
                                 <option value="capsule">Capsule</option>
                                 <option value="syrup">Syrup</option>
@@ -52,78 +56,95 @@
                                 <option value="other">Other</option>
                             </select>
                         </div>
-                        
-                        <!-- Units Per Pack (Only for countable types) -->
-                        <div class="col-md-4 mb-3" id="unitsPerPackDiv" style="display: none;">
-                            <label class="form-label">
-                                <span id="unitsLabel">Units</span> Per Pack <span class="text-danger">*</span>
+                        <div class="col-md-6" id="unitsPerPackSection">
+                            <label for="units_per_pack" class="form-label">
+                                Units Per Strip/Pack
                             </label>
-                            <input type="number" name="units_per_pack" id="unitsPerPack" 
-                                   class="form-control" min="1" placeholder="e.g., 10, 15, 30">
-                            <small class="text-muted" id="unitsHelp">Number of tablets/capsules in one pack</small>
-                        </div>
-                        
-                        <!-- Batch Number -->
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Batch Number <span class="text-danger">*</span></label>
-                            <input type="text" name="batch_no" class="form-control" required
-                                   placeholder="Enter batch number">
+                            <input type="number" name="units_per_pack" id="units_per_pack"
+                                   class="form-control" min="1" placeholder="e.g., 10">
+                            <div class="form-text">
+                                How many tablets/capsules in one strip or pack?
+                            </div>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <!-- Expiry Date -->
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Expiry Date <span class="text-danger">*</span></label>
-                            <input type="date" name="expiry_date" class="form-control" required>
+
+                    <!-- Batch No & Expiry Date -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="batch_no" class="form-label">
+                                Batch Number <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" name="batch_no" id="batch_no" class="form-control"
+                                   required placeholder="e.g., BT-2024-001">
                         </div>
-                        
-                        <!-- Quantity (Packs) -->
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Quantity (Packs) <span class="text-danger">*</span></label>
-                            <input type="number" name="quantity" id="quantity" class="form-control" 
-                                   min="0" value="0" required placeholder="Number of packs">
-                        </div>
-                        
-                        <!-- Total Units Display -->
-                        <div class="col-md-4 mb-3" id="totalUnitsDiv" style="display: none;">
-                            <label class="form-label">Total Units</label>
-                            <input type="text" id="totalUnits" class="form-control bg-light" readonly>
-                            <small class="text-muted">Auto-calculated</small>
+                        <div class="col-md-6">
+                            <label for="expiry_date" class="form-label">
+                                Expiry Date <span class="text-danger">*</span>
+                            </label>
+                            <input type="date" name="expiry_date" id="expiry_date"
+                                   class="form-control" required>
                         </div>
                     </div>
-                    
-                    <div class="row">
-                        <!-- Purchase Price -->
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Purchase Price ₹ <span class="text-danger">*</span></label>
-                            <input type="number" name="purchase_price" class="form-control" 
-                                   min="0" step="0.01" required placeholder="0.00">
+
+                    <!-- Quantity -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="quantity" class="form-label">
+                                <span id="quantityLabel">Quantity</span>
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="number" name="quantity" id="quantity" class="form-control"
+                                   required min="0" value="0" placeholder="0">
+                            <div class="form-text" id="quantityHelp">
+                                Enter the total number of units in stock.
+                            </div>
                         </div>
-                        
-                        <!-- Selling Price -->
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Selling Price ₹ <span class="text-danger">*</span></label>
-                            <input type="number" name="selling_price" class="form-control" 
-                                   min="0" step="0.01" required placeholder="0.00">
-                        </div>
-                        
-                        <!-- Supplier -->
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Supplier</label>
-                            <input type="text" name="supplier" class="form-control"
-                                   placeholder="Enter supplier name">
+                        <div class="col-md-6" id="quantityBreakdownSection" style="display:none;">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="alert alert-info py-2 mb-0" id="quantityBreakdown">
+                                <i class="bi bi-calculator"></i>
+                                <span id="breakdownText">—</span>
+                            </div>
                         </div>
                     </div>
-                    
+
+                    <!-- Prices -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="purchase_price" class="form-label">
+                                Purchase Price (₹) <span class="text-danger">*</span>
+                                <span class="text-muted" id="purchasePriceLabel"></span>
+                            </label>
+                            <input type="number" name="purchase_price" id="purchase_price"
+                                   class="form-control" required min="0" step="0.01"
+                                   placeholder="0.00">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="selling_price" class="form-label">
+                                Selling Price (₹) <span class="text-danger">*</span>
+                                <span class="text-muted" id="sellingPriceLabel"></span>
+                            </label>
+                            <input type="number" name="selling_price" id="selling_price"
+                                   class="form-control" required min="0" step="0.01"
+                                   placeholder="0.00">
+                        </div>
+                    </div>
+
+                    <!-- Supplier -->
+                    <div class="mb-3">
+                        <label for="supplier" class="form-label">Supplier</label>
+                        <input type="text" name="supplier" id="supplier" class="form-control"
+                               placeholder="Supplier name">
+                    </div>
+
                     <!-- Buttons -->
-                    <div class="d-flex justify-content-between mt-4">
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Add Medicine
+                        </button>
                         <a href="{{ url_for('inventory') }}" class="btn btn-secondary">
                             <i class="bi bi-arrow-left"></i> Cancel
                         </a>
-                        <button type="submit" class="btn btn-success">
-                            <i class="bi bi-check-lg"></i> Add Medicine
-                        </button>
                     </div>
                 </form>
             </div>
@@ -134,82 +155,65 @@
 
 {% block extra_js %}
 <script>
-// Countable medicine types (need units per pack)
-const countableTypes = ['tablet', 'capsule', 'suppository'];
+const COUNTABLE_TYPES = ['tablet', 'capsule', 'suppository'];
 
-// DOM Elements
-const medicineType = document.getElementById('medicineType');
-const unitsPerPackDiv = document.getElementById('unitsPerPackDiv');
-const unitsPerPack = document.getElementById('unitsPerPack');
-const unitsLabel = document.getElementById('unitsLabel');
-const unitsHelp = document.getElementById('unitsHelp');
-const totalUnitsDiv = document.getElementById('totalUnitsDiv');
-const totalUnits = document.getElementById('totalUnits');
-const quantity = document.getElementById('quantity');
+function isCountable(type) {
+    return COUNTABLE_TYPES.includes(type);
+}
 
-// Update form based on medicine type selection
-medicineType.addEventListener('change', function() {
-    const selectedType = this.value;
-    
-    if (countableTypes.includes(selectedType)) {
-        // Show units per pack field
-        unitsPerPackDiv.style.display = 'block';
-        totalUnitsDiv.style.display = 'block';
-        unitsPerPack.required = true;
-        
-        // Update label based on type
-        if (selectedType === 'tablet') {
-            unitsLabel.textContent = 'Tablets';
-            unitsHelp.textContent = 'Number of tablets in one pack/strip';
-        } else if (selectedType === 'capsule') {
-            unitsLabel.textContent = 'Capsules';
-            unitsHelp.textContent = 'Number of capsules in one pack/strip';
-        } else if (selectedType === 'suppository') {
-            unitsLabel.textContent = 'Suppositories';
-            unitsHelp.textContent = 'Number of suppositories in one pack';
-        }
-        
-        calculateTotalUnits();
+function toggleUnitsPerPack() {
+    const type = document.getElementById('medicine_type').value;
+    const section = document.getElementById('unitsPerPackSection');
+    const quantityLabel = document.getElementById('quantityLabel');
+    const quantityHelp = document.getElementById('quantityHelp');
+    const purchaseLabel = document.getElementById('purchasePriceLabel');
+    const sellingLabel = document.getElementById('sellingPriceLabel');
+
+    if (isCountable(type)) {
+        section.style.display = 'block';
+        quantityLabel.textContent = 'Total Individual Units in Stock';
+        quantityHelp.innerHTML =
+            '<i class="bi bi-info-circle"></i> Enter the <strong>total number of individual ' +
+            type + 's</strong>. Example: 5 strips × 10 = enter 50.';
+        purchaseLabel.textContent = '(per ' + type + ')';
+        sellingLabel.textContent = '(per ' + type + ')';
     } else {
-        // Hide units per pack field
-        unitsPerPackDiv.style.display = 'none';
-        totalUnitsDiv.style.display = 'none';
-        unitsPerPack.required = false;
-        unitsPerPack.value = '';
-        totalUnits.value = '';
+        section.style.display = 'none';
+        quantityLabel.textContent = 'Quantity';
+        quantityHelp.textContent = 'Enter the number of packs/bottles/units in stock.';
+        purchaseLabel.textContent = '';
+        sellingLabel.textContent = '';
     }
-});
 
-// Calculate total units when quantity or units per pack changes
-function calculateTotalUnits() {
-    const qty = parseInt(quantity.value) || 0;
-    const unitsPerPackVal = parseInt(unitsPerPack.value) || 0;
-    
-    if (qty > 0 && unitsPerPackVal > 0) {
-        const total = qty * unitsPerPackVal;
-        totalUnits.value = total + ' ' + unitsLabel.textContent.toLowerCase();
+    updateBreakdown();
+}
+
+function updateBreakdown() {
+    const type = document.getElementById('medicine_type').value;
+    const qty = parseInt(document.getElementById('quantity').value) || 0;
+    const unitsPerPack = parseInt(document.getElementById('units_per_pack').value) || 0;
+    const section = document.getElementById('quantityBreakdownSection');
+    const text = document.getElementById('breakdownText');
+
+    if (isCountable(type) && unitsPerPack > 0 && qty > 0) {
+        const strips = Math.floor(qty / unitsPerPack);
+        const loose = qty % unitsPerPack;
+        let msg = `${qty} ${type}s = ${strips} strip${strips !== 1 ? 's' : ''}`;
+        if (loose > 0) {
+            msg += ` + ${loose} loose`;
+        }
+        text.textContent = msg;
+        section.style.display = 'block';
     } else {
-        totalUnits.value = '';
+        section.style.display = 'none';
     }
 }
 
-// Event listeners for calculation
-unitsPerPack.addEventListener('input', calculateTotalUnits);
-quantity.addEventListener('input', calculateTotalUnits);
+// Event listeners
+document.getElementById('quantity').addEventListener('input', updateBreakdown);
+document.getElementById('units_per_pack').addEventListener('input', updateBreakdown);
 
-// Form validation before submit
-document.getElementById('medicineForm').addEventListener('submit', function(e) {
-    const selectedType = medicineType.value;
-    
-    if (countableTypes.includes(selectedType)) {
-        const unitsVal = parseInt(unitsPerPack.value);
-        if (!unitsVal || unitsVal < 1) {
-            e.preventDefault();
-            alert('Please enter the number of ' + unitsLabel.textContent.toLowerCase() + ' per pack.');
-            unitsPerPack.focus();
-            return false;
-        }
-    }
-});
+// Initialize on load
+toggleUnitsPerPack();
 </script>
 {% endblock %}
