@@ -982,7 +982,8 @@ def expiry_report():
         expiring_soon=expiring_soon,
         expired_value=expired_value,
         expiring_value=expiring_value,
-        today=today
+        today=today,
+        import_date=today  # ← THIS LINE FIXES THE ERROR
     )
 
 
