@@ -5,10 +5,13 @@
 {% block content %}
 
 <div class="container mt-4">
-    <h2><i class="fas fa-plus"></i> Add New Store</h2>
 
 ```
-<div class="card mt-3">
+<h2 class="mb-4">
+    <i class="fas fa-store"></i> Add New Store
+</h2>
+
+<div class="card">
     <div class="card-body">
 
         <form method="POST">
@@ -17,27 +20,43 @@
 
             <div class="mb-3">
                 <label class="form-label">Store Name *</label>
-                <input type="text" name="store_name" class="form-control" required>
+                <input type="text"
+                       name="store_name"
+                       class="form-control"
+                       value="{{ request.form.get('store_name','') }}"
+                       required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Address</label>
-                <input type="text" name="address" class="form-control">
+                <input type="text"
+                       name="address"
+                       class="form-control"
+                       value="{{ request.form.get('address','') }}">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Phone</label>
-                <input type="text" name="phone" class="form-control">
+                <input type="text"
+                       name="phone"
+                       class="form-control"
+                       value="{{ request.form.get('phone','') }}">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Email</label>
-                <input type="email" name="email" class="form-control">
+                <input type="email"
+                       name="email"
+                       class="form-control"
+                       value="{{ request.form.get('email','') }}">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">License Number</label>
-                <input type="text" name="license_no" class="form-control">
+                <input type="text"
+                       name="license_no"
+                       class="form-control"
+                       value="{{ request.form.get('license_no','') }}">
             </div>
 
             <hr>
@@ -46,26 +65,42 @@
 
             <div class="mb-3">
                 <label class="form-label">Owner Full Name</label>
-                <input type="text" name="owner_fullname" class="form-control">
+                <input type="text"
+                       name="owner_fullname"
+                       class="form-control"
+                       value="{{ request.form.get('owner_fullname','') }}">
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Owner Username *</label>
-                <input type="text" name="owner_username" class="form-control" required>
+                <input type="text"
+                       name="owner_username"
+                       class="form-control"
+                       value="{{ request.form.get('owner_username','') }}"
+                       required>
             </div>
 
             <div class="mb-3">
                 <label class="form-label">Owner Password *</label>
-                <input type="password" name="owner_password" class="form-control" required>
+                <input type="password"
+                       name="owner_password"
+                       class="form-control"
+                       minlength="6"
+                       required>
             </div>
 
-            <button type="submit" class="btn btn-success">
-                <i class="fas fa-save"></i> Create Store
-            </button>
+            <div class="mt-4">
 
-            <a href="{{ url_for('admin_stores') }}" class="btn btn-secondary">
-                Cancel
-            </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-save"></i> Create Store
+                </button>
+
+                <a href="{{ url_for('admin_stores') }}"
+                   class="btn btn-secondary">
+                   Cancel
+                </a>
+
+            </div>
 
         </form>
 
