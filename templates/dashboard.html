@@ -1,112 +1,151 @@
 {% extends "base.html" %}
-{% block title %}Dashboard - PharmaCare{% endblock %}
+{% block title %}Dashboard - PharmaCare Pro{% endblock %}
 {% block page_title %}Dashboard{% endblock %}
 
 {% block content %}
-<!-- Stat Cards -->
-<div class="row g-2 g-md-3 mb-4">
-    <div class="col-6 col-md-3">
-        <div class="card stat-card bg-primary text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h3>{{ total_medicines }}</h3>
-                        <p class="mb-0 small">Total Medicines</p>
-                    </div>
-                    <i class="bi bi-capsule stat-icon d-none d-sm-block"></i>
+<!-- ═══════════ STAT CARDS ═══════════ -->
+<div class="row g-3 mb-4">
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-primary animate-in animate-in-delay-1">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Total Medicines</div>
+                    <div class="stat-card-value">{{ total_medicines }}</div>
+                </div>
+                <div class="stat-card-icon">
+                    <i class="bi bi-capsule"></i>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="card stat-card bg-warning text-dark h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h3>{{ low_stock_count }}</h3>
-                        <p class="mb-0 small">Low Stock</p>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-warning animate-in animate-in-delay-2">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Low Stock</div>
+                    <div class="stat-card-value">{{ low_stock_count }}</div>
+                    {% if low_stock_count > 0 %}
+                    <div class="stat-card-change down">
+                        <i class="bi bi-exclamation-triangle"></i> Needs attention
                     </div>
-                    <i class="bi bi-exclamation-triangle stat-icon d-none d-sm-block"></i>
+                    {% endif %}
+                </div>
+                <div class="stat-card-icon">
+                    <i class="bi bi-exclamation-triangle"></i>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="card stat-card bg-danger text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h3>{{ expiring_count }}</h3>
-                        <p class="mb-0 small">Expiring Soon</p>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-danger animate-in animate-in-delay-3">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Expiring Soon</div>
+                    <div class="stat-card-value">{{ expiring_count }}</div>
+                    {% if expiring_count > 0 %}
+                    <div class="stat-card-change down">
+                        <i class="bi bi-calendar-x"></i> Within 30 days
                     </div>
-                    <i class="bi bi-calendar-x stat-icon d-none d-sm-block"></i>
+                    {% endif %}
+                </div>
+                <div class="stat-card-icon">
+                    <i class="bi bi-calendar-x"></i>
                 </div>
             </div>
         </div>
     </div>
-    <div class="col-6 col-md-3">
-        <div class="card stat-card bg-success text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-start">
-                    <div>
-                        <h3>₹{{ "%.0f"|format(today_revenue) }}</h3>
-                        <p class="mb-0 small">Today's Revenue</p>
+    <div class="col-6 col-lg-3">
+        <div class="stat-card stat-success animate-in animate-in-delay-4">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Today's Revenue</div>
+                    <div class="stat-card-value">₹{{ "%.0f"|format(today_revenue) }}</div>
+                    <div class="stat-card-change up">
+                        <i class="bi bi-receipt"></i> {{ today_sales_count }} sale{{ 's' if today_sales_count != 1 }}
                     </div>
-                    <i class="bi bi-currency-rupee stat-icon d-none d-sm-block"></i>
+                </div>
+                <div class="stat-card-icon">
+                    <i class="bi bi-currency-rupee"></i>
                 </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Second Row -->
-<div class="row g-2 g-md-3 mb-4">
+<!-- ═══════════ SECONDARY STATS ═══════════ -->
+<div class="row g-3 mb-4">
     <div class="col-6">
-        <div class="card stat-card bg-info text-white h-100">
-            <div class="card-body">
-                <h3>{{ today_sales_count }}</h3>
-                <p class="mb-0 small">Today's Sales</p>
+        <div class="stat-card stat-info animate-in">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Today's Sales</div>
+                    <div class="stat-card-value">{{ today_sales_count }}</div>
+                </div>
+                <div class="stat-card-icon">
+                    <i class="bi bi-bag-check"></i>
+                </div>
             </div>
         </div>
     </div>
     <div class="col-6">
-        <div class="card stat-card bg-secondary text-white h-100">
-            <div class="card-body">
-                <h3>₹{{ "%.0f"|format(total_stock_value) }}</h3>
-                <p class="mb-0 small">Stock Value</p>
+        <div class="stat-card stat-primary animate-in">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Stock Value</div>
+                    <div class="stat-card-value">₹{{ "%.0f"|format(total_stock_value) }}</div>
+                </div>
+                <div class="stat-card-icon">
+                    <i class="bi bi-box-seam"></i>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Low Stock & Expiring -->
-<div class="row g-2 g-md-3 mb-4">
+<!-- ═══════════ ALERTS SECTION ═══════════ -->
+<div class="row g-3 mb-4">
     {% if low_stock_medicines %}
     <div class="col-12 col-lg-6">
-        <div class="card h-100">
-            <div class="card-header bg-warning text-dark">
-                <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Low Stock</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover mb-0">
-                        <thead>
-                            <tr><th>Medicine</th><th class="text-center">Stock</th></tr>
-                        </thead>
-                        <tbody>
-                            {% for m in low_stock_medicines[:5] %}
-                            <tr>
-                                <td>{{ m.name }}</td>
-                                <td class="text-center">
-                                    <span class="badge bg-{{ 'danger' if m.quantity == 0 else 'warning text-dark' }}">
-                                        {{ m.quantity }}{% if m.is_countable %} units{% endif %}
-                                    </span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+        <div class="table-container animate-in">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <i class="bi bi-exclamation-triangle" style="color: var(--warning);"></i>
+                    Low Stock Alert
                 </div>
+                <span class="badge" style="background: var(--warning-bg); color: var(--warning);">
+                    {{ low_stock_medicines|length }}
+                </span>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Medicine</th>
+                            <th class="text-center" style="width: 100px;">Stock</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in low_stock_medicines[:6] %}
+                        <tr class="{{ 'row-danger' if m.quantity == 0 else 'row-warning' }}">
+                            <td>
+                                <strong style="color: var(--text-primary);">{{ m.name }}</strong>
+                                {% if m.generic_name %}
+                                <br><small style="color: var(--text-muted);">{{ m.generic_name }}</small>
+                                {% endif %}
+                            </td>
+                            <td class="text-center">
+                                {% if m.quantity == 0 %}
+                                <span class="badge-status inactive">Out of Stock</span>
+                                {% else %}
+                                <span class="badge" style="background: var(--warning-bg); color: var(--warning);">
+                                    {{ m.quantity }}{% if m.is_countable %} units{% endif %}
+                                </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -114,71 +153,149 @@
 
     {% if expiring_medicines %}
     <div class="col-12 col-lg-6">
-        <div class="card h-100">
-            <div class="card-header bg-danger text-white">
-                <h6 class="mb-0"><i class="bi bi-calendar-x"></i> Expiring Soon</h6>
-            </div>
-            <div class="card-body p-0">
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover mb-0">
-                        <thead>
-                            <tr><th>Medicine</th><th class="text-center">Expiry</th></tr>
-                        </thead>
-                        <tbody>
-                            {% for m in expiring_medicines[:5] %}
-                            <tr>
-                                <td>{{ m.name }}</td>
-                                <td class="text-center">
-                                    <span class="badge bg-danger">{{ m.expiry_date.strftime('%d/%m/%Y') }}</span>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
+        <div class="table-container animate-in">
+            <div class="card-header">
+                <div class="card-header-title">
+                    <i class="bi bi-calendar-x" style="color: var(--danger);"></i>
+                    Expiry Alert
                 </div>
+                <span class="badge" style="background: var(--danger-bg); color: var(--danger);">
+                    {{ expiring_medicines|length }}
+                </span>
+            </div>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Medicine</th>
+                            <th class="text-center" style="width: 120px;">Expiry Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for m in expiring_medicines[:6] %}
+                        <tr class="row-danger">
+                            <td>
+                                <strong style="color: var(--text-primary);">{{ m.name }}</strong>
+                                <br><small style="color: var(--text-muted);">Batch: {{ m.batch_no }}</small>
+                            </td>
+                            <td class="text-center">
+                                <span class="badge-status expiring">
+                                    {{ m.expiry_date.strftime('%d/%m/%Y') }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
     {% endif %}
 </div>
 
-<!-- Recent Sales -->
+<!-- ═══════════ RECENT SALES ═══════════ -->
 {% if recent_sales %}
-<div class="card">
+<div class="table-container animate-in">
     <div class="card-header">
-        <h6 class="mb-0"><i class="bi bi-clock-history"></i> Recent Sales</h6>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Invoice</th>
-                        <th class="d-none d-sm-table-cell">Customer</th>
-                        <th class="text-end">Amount</th>
-                        <th class="d-none d-md-table-cell">Date</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sale in recent_sales %}
-                    <tr>
-                        <td><code class="small">{{ sale.invoice_no }}</code></td>
-                        <td class="d-none d-sm-table-cell">{{ sale.customer_name or 'Walk-in' }}</td>
-                        <td class="text-end">₹{{ "%.2f"|format(sale.total_amount) }}</td>
-                        <td class="d-none d-md-table-cell small">{{ sale.sale_date.strftime('%d/%m %I:%M%p') }}</td>
-                        <td>
-                            <a href="{{ url_for('view_bill', sale_id=sale.id) }}"
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <div class="card-header-title">
+            <i class="bi bi-clock-history"></i>
+            Recent Transactions
         </div>
+        <a href="{{ url_for('daily_report') }}" class="btn btn-sm btn-outline-primary">
+            View All <i class="bi bi-arrow-right"></i>
+        </a>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Invoice</th>
+                    <th class="d-none d-sm-table-cell">Customer</th>
+                    <th class="text-end">Amount</th>
+                    <th class="d-none d-md-table-cell">Date & Time</th>
+                    <th class="text-center" style="width: 60px;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in recent_sales %}
+                <tr>
+                    <td>
+                        <code style="background: var(--bg-input); padding: 3px 8px; border-radius: 4px; font-size: 0.78rem; color: var(--primary);">
+                            {{ sale.invoice_no }}
+                        </code>
+                    </td>
+                    <td class="d-none d-sm-table-cell">
+                        <span style="color: var(--text-primary); font-weight: 500;">
+                            {{ sale.customer_name or 'Walk-in Customer' }}
+                        </span>
+                    </td>
+                    <td class="text-end">
+                        <strong style="color: var(--text-primary);">₹{{ "%.2f"|format(sale.total_amount) }}</strong>
+                    </td>
+                    <td class="d-none d-md-table-cell">
+                        <span style="color: var(--text-muted); font-size: 0.82rem;">
+                            {{ sale.sale_date.strftime('%d %b, %I:%M %p') }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ url_for('view_bill', sale_id=sale.id) }}"
+                           class="btn btn-icon btn-sm btn-outline-primary" title="View Bill">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endif %}
+
+<!-- ═══════════ QUICK ACTIONS ═══════════ -->
+<div class="row g-3 mt-1">
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('add_medicine') }}" class="report-card card text-center text-decoration-none h-100 animate-in">
+            <div class="card-body py-4">
+                <div class="report-icon mx-auto mb-3" style="background: rgba(99,102,241,0.1); color: var(--primary);">
+                    <i class="bi bi-plus-circle"></i>
+                </div>
+                <h6 style="color: var(--text-primary); font-weight: 600;">Add Medicine</h6>
+                <small style="color: var(--text-muted);" class="d-none d-sm-block">New inventory item</small>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('sales') }}" class="report-card card text-center text-decoration-none h-100 animate-in">
+            <div class="card-body py-4">
+                <div class="report-icon mx-auto mb-3" style="background: var(--success-bg); color: var(--success);">
+                    <i class="bi bi-cart-plus"></i>
+                </div>
+                <h6 style="color: var(--text-primary); font-weight: 600;">New Sale</h6>
+                <small style="color: var(--text-muted);" class="d-none d-sm-block">Point of sale</small>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('stock_report') }}" class="report-card card text-center text-decoration-none h-100 animate-in">
+            <div class="card-body py-4">
+                <div class="report-icon mx-auto mb-3" style="background: var(--info-bg); color: var(--info);">
+                    <i class="bi bi-clipboard-data"></i>
+                </div>
+                <h6 style="color: var(--text-primary); font-weight: 600;">Stock Report</h6>
+                <small style="color: var(--text-muted);" class="d-none d-sm-block">Current inventory</small>
+            </div>
+        </a>
+    </div>
+    <div class="col-6 col-md-3">
+        <a href="{{ url_for('expiry_report') }}" class="report-card card text-center text-decoration-none h-100 animate-in">
+            <div class="card-body py-4">
+                <div class="report-icon mx-auto mb-3" style="background: var(--danger-bg); color: var(--danger);">
+                    <i class="bi bi-calendar-x"></i>
+                </div>
+                <h6 style="color: var(--text-primary); font-weight: 600;">Expiry Check</h6>
+                <small style="color: var(--text-muted);" class="d-none d-sm-block">Expiring items</small>
+            </div>
+        </a>
+    </div>
+</div>
 {% endblock %}

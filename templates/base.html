@@ -3,213 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-    <meta name="theme-color" content="#2c3e50">
+    <meta name="theme-color" content="#0f172a">
     <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo.ico') }}">
-    <title>{% block title %}PharmaCare{% endblock %}</title>
+    <title>{% block title %}PharmaCare Pro{% endblock %}</title>
+
+    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Custom CSS -->
     <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+
     {% block extra_css %}{% endblock %}
 </head>
 <body>
 
 {% if current_user.is_authenticated %}
-    {# ─────────── AUTHENTICATED LAYOUT ─────────── #}
-    <div class="wrapper">
+{# ═══════════ AUTHENTICATED LAYOUT ═══════════ #}
+<div class="wrapper">
 
-        <!-- ═══ MOBILE OVERLAY (closes sidebar on tap) ═══ -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
-        <!-- ═══ SIDEBAR ═══ -->
-        <nav class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h3><i class="bi bi-hospital"></i> PharmaCare</h3>
-                {% if current_user.is_superadmin %}
-                    <p>Platform Admin</p>
-                {% elif current_user.store %}
-                    <p class="store-name-sidebar">{{ current_user.store.name }}</p>
-                {% else %}
-                    <p>Medical Store</p>
-                {% endif %}
-                <!-- Close button visible on mobile -->
-                <button class="sidebar-close-btn d-lg-none" onclick="closeSidebar()" aria-label="Close menu">
-                    <i class="bi bi-x-lg"></i>
-                </button>
-            </div>
-
-            <ul class="nav flex-column">
-                {% if current_user.is_superadmin %}
-                    <div class="nav-section-label">Administration</div>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
-                           href="{{ url_for('admin_dashboard') }}" onclick="closeSidebar()">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint in ['admin_stores', 'admin_add_store', 'admin_store_users'] %}active{% endif %}"
-                           href="{{ url_for('admin_stores') }}" onclick="closeSidebar()">
-                            <i class="bi bi-shop"></i> Stores
-                        </a>
-                    </li>
-                {% else %}
-                    <div class="nav-section-label">Main Menu</div>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
-                           href="{{ url_for('dashboard') }}" onclick="closeSidebar()">
-                            <i class="bi bi-speedometer2"></i> Dashboard
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint in ['inventory', 'add_medicine', 'edit_medicine'] %}active{% endif %}"
-                           href="{{ url_for('inventory') }}" onclick="closeSidebar()">
-                            <i class="bi bi-capsule"></i> Inventory
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint in ['sales', 'view_bill'] %}active{% endif %}"
-                           href="{{ url_for('sales') }}" onclick="closeSidebar()">
-                            <i class="bi bi-cart3"></i> Sales
-                        </a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint in ['reports', 'daily_report', 'date_range_report', 'stock_report', 'expiry_report'] %}active{% endif %}"
-                           href="{{ url_for('reports') }}" onclick="closeSidebar()">
-                            <i class="bi bi-graph-up"></i> Reports
-                        </a>
-                    </li>
-                    {% if current_user.is_owner %}
-                    <div class="nav-section-label">Management</div>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint in ['manage_users', 'add_user'] %}active{% endif %}"
-                           href="{{ url_for('manage_users') }}" onclick="closeSidebar()">
-                            <i class="bi bi-people"></i> Staff
-                        </a>
-                    </li>
-                    {% endif %}
-                {% endif %}
-            </ul>
-
-            <!-- Sidebar Footer -->
-            <div class="sidebar-footer">
-                <small>Logged in as:</small><br>
-                <strong>{{ current_user.full_name or current_user.username }}</strong><br>
-                {% if current_user.is_superadmin %}
-                    <span class="badge bg-danger mt-1">Superadmin</span>
-                {% elif current_user.is_owner %}
-                    <span class="badge bg-primary mt-1">Owner</span>
-                {% else %}
-                    <span class="badge bg-secondary mt-1">Staff</span>
-                {% endif %}
-                <br>
-                <a href="{{ url_for('logout') }}" class="btn btn-outline-light btn-sm w-100 mt-2">
-                    <i class="bi bi-box-arrow-right"></i> Logout
-                </a>
-            </div>
-        </nav>
-
-        <!-- ═══ MAIN CONTENT ═══ -->
-        <div class="main-content" id="mainContent">
-            <!-- Top Navbar -->
-            <div class="top-navbar">
-                <div class="d-flex align-items-center">
-                    <!-- Hamburger button — visible on mobile/tablet -->
-                    <button class="hamburger-btn d-lg-none" onclick="toggleSidebar()" aria-label="Toggle menu">
-                        <i class="bi bi-list"></i>
-                    </button>
-                    <h4 class="mb-0 page-title">{% block page_title %}Dashboard{% endblock %}</h4>
+    <!-- ═══ SIDEBAR ═══ -->
+    <nav class="sidebar" id="sidebar">
+        <!-- Brand -->
+        <div class="sidebar-header">
+            <a href="{{ url_for('index') }}" class="sidebar-brand">
+                <div class="sidebar-brand-icon">
+                    <i class="bi bi-hospital"></i>
                 </div>
-                <div class="d-flex align-items-center top-navbar-right">
-                    {% if not current_user.is_superadmin and current_user.store %}
-                        <span class="badge bg-light text-dark me-2 d-none d-sm-inline-block">
-                            <i class="bi bi-shop"></i> {{ current_user.store.name }}
-                        </span>
-                    {% endif %}
-                    <span class="text-muted d-none d-sm-inline">
-                        <i class="bi bi-calendar3"></i> {{ now.strftime('%d %b %Y') }}
+                <div class="sidebar-brand-text">
+                    <span class="sidebar-brand-name">PharmaCare</span>
+                    <span class="sidebar-brand-sub">
+                        {% if current_user.is_superadmin %}
+                            Platform Admin
+                        {% elif current_user.store %}
+                            {{ current_user.store.name }}
+                        {% else %}
+                            Medical Store
+                        {% endif %}
                     </span>
                 </div>
+            </a>
+            <button class="sidebar-close-btn d-lg-none" onclick="closeSidebar()" aria-label="Close">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Navigation -->
+        <div class="sidebar-nav">
+            {% if current_user.is_superadmin %}
+                {# ── Superadmin Nav ── #}
+                <div class="sidebar-nav-section">
+                    <span class="sidebar-nav-label">Administration</span>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li class="sidebar-nav-item">
+                            <a href="{{ url_for('admin_dashboard') }}"
+                               class="sidebar-nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
+                               onclick="closeSidebar()">
+                                <i class="bi bi-grid-1x2-fill sidebar-nav-icon"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="{{ url_for('admin_stores') }}"
+                               class="sidebar-nav-link {% if request.endpoint in ['admin_stores', 'admin_add_store', 'admin_store_users'] %}active{% endif %}"
+                               onclick="closeSidebar()">
+                                <i class="bi bi-shop sidebar-nav-icon"></i>
+                                Stores
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            {% else %}
+                {# ── Store User Nav ── #}
+                <div class="sidebar-nav-section">
+                    <span class="sidebar-nav-label">Main Menu</span>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li class="sidebar-nav-item">
+                            <a href="{{ url_for('dashboard') }}"
+                               class="sidebar-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
+                               onclick="closeSidebar()">
+                                <i class="bi bi-grid-1x2-fill sidebar-nav-icon"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="{{ url_for('inventory') }}"
+                               class="sidebar-nav-link {% if request.endpoint in ['inventory', 'add_medicine', 'edit_medicine'] %}active{% endif %}"
+                               onclick="closeSidebar()">
+                                <i class="bi bi-capsule sidebar-nav-icon"></i>
+                                Inventory
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="{{ url_for('sales') }}"
+                               class="sidebar-nav-link {% if request.endpoint in ['sales', 'view_bill'] %}active{% endif %}"
+                               onclick="closeSidebar()">
+                                <i class="bi bi-cart3 sidebar-nav-icon"></i>
+                                Point of Sale
+                            </a>
+                        </li>
+                        <li class="sidebar-nav-item">
+                            <a href="{{ url_for('reports') }}"
+                               class="sidebar-nav-link {% if request.endpoint in ['reports', 'daily_report', 'date_range_report', 'stock_report', 'expiry_report'] %}active{% endif %}"
+                               onclick="closeSidebar()">
+                                <i class="bi bi-bar-chart-line sidebar-nav-icon"></i>
+                                Reports
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                {% if current_user.is_owner %}
+                <div class="sidebar-nav-section">
+                    <span class="sidebar-nav-label">Management</span>
+                    <ul style="list-style:none; padding:0; margin:0;">
+                        <li class="sidebar-nav-item">
+                            <a href="{{ url_for('manage_users') }}"
+                               class="sidebar-nav-link {% if request.endpoint in ['manage_users', 'add_user'] %}active{% endif %}"
+                               onclick="closeSidebar()">
+                                <i class="bi bi-people sidebar-nav-icon"></i>
+                                Staff Management
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <!-- Sidebar Footer -->
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="sidebar-avatar {{ 'admin' if current_user.is_superadmin else ('owner' if current_user.is_owner else 'staff') }}">
+                    {{ (current_user.full_name or current_user.username)[0]|upper }}
+                </div>
+                <div class="sidebar-user-info">
+                    <div class="sidebar-user-name">
+                        {{ current_user.full_name or current_user.username }}
+                    </div>
+                    <div class="sidebar-user-role">
+                        {{ current_user.role|title }}
+                    </div>
+                </div>
             </div>
+            <a href="{{ url_for('logout') }}" class="sidebar-logout-btn">
+                <i class="bi bi-box-arrow-left"></i>
+                Sign Out
+            </a>
+        </div>
+    </nav>
 
-            <!-- Content Area -->
-            <div class="content-area">
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-                                {% if category == 'success' %}
-                                    <i class="bi bi-check-circle-fill me-1"></i>
-                                {% elif category == 'danger' %}
-                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
-                                {% elif category == 'warning' %}
-                                    <i class="bi bi-exclamation-circle-fill me-1"></i>
-                                {% elif category == 'info' %}
-                                    <i class="bi bi-info-circle-fill me-1"></i>
-                                {% endif %}
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-
-                {% block content %}{% endblock %}
+    <!-- ═══ MAIN CONTENT ═══ -->
+    <div class="main-content" id="mainContent">
+        <!-- Top Navbar -->
+        <div class="top-navbar">
+            <div class="topbar-left">
+                <button class="hamburger-btn d-lg-none" onclick="toggleSidebar()" aria-label="Menu">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div>
+                    <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
+                </div>
+            </div>
+            <div class="topbar-right">
+                {% if not current_user.is_superadmin and current_user.store %}
+                <span class="topbar-badge d-none d-sm-inline-flex">
+                    <i class="bi bi-shop"></i>
+                    {{ current_user.store.name }}
+                </span>
+                {% endif %}
+                <span class="topbar-badge d-none d-md-inline-flex">
+                    <i class="bi bi-calendar3"></i>
+                    {{ now.strftime('%d %b %Y') }}
+                </span>
             </div>
         </div>
-    </div>
 
-{% else %}
-    {# ─────────── LOGIN PAGE (no sidebar) ─────────── #}
-    <div class="login-body">
-        <div class="container">
+        <!-- Content -->
+        <div class="content-area">
+            <!-- Flash Messages -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
-                    <div class="row justify-content-center mb-3">
-                        <div class="col-11 col-sm-8 col-md-5">
-                            {% for category, message in messages %}
-                                <div class="alert alert-{{ category }} alert-dismissible fade show">
-                                    {{ message }}
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                </div>
-                            {% endfor %}
-                        </div>
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show animate-in" role="alert">
+                        {% if category == 'success' %}<i class="bi bi-check-circle-fill"></i>
+                        {% elif category == 'danger' %}<i class="bi bi-exclamation-triangle-fill"></i>
+                        {% elif category == 'warning' %}<i class="bi bi-exclamation-circle-fill"></i>
+                        {% elif category == 'info' %}<i class="bi bi-info-circle-fill"></i>
+                        {% endif %}
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                     </div>
+                    {% endfor %}
                 {% endif %}
             {% endwith %}
-            {% block content_public %}{% endblock %}
+
+            {% block content %}{% endblock %}
         </div>
     </div>
+</div>
+
+{% else %}
+{# ═══════════ LOGIN LAYOUT ═══════════ #}
+<div class="login-body">
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            <div class="row justify-content-center mb-3">
+                <div class="col-11 col-sm-8 col-md-5 col-lg-4">
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        {% endwith %}
+        {% block content_public %}{% endblock %}
+    </div>
+</div>
 {% endif %}
 
+<!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- ═══ SIDEBAR TOGGLE JS ═══ -->
+<!-- Sidebar Toggle -->
 <script>
 function toggleSidebar() {
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebarOverlay').classList.toggle('active');
     document.body.classList.toggle('sidebar-open');
 }
-
 function closeSidebar() {
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebarOverlay').classList.remove('active');
     document.body.classList.remove('sidebar-open');
 }
-
-// Close sidebar on window resize to desktop
-window.addEventListener('resize', function() {
-    if (window.innerWidth >= 992) {
-        closeSidebar();
-    }
-});
-
-// Close sidebar on Escape key
-document.addEventListener('keydown', function(e) {
-    if (e.key === 'Escape') {
-        closeSidebar();
-    }
-});
+window.addEventListener('resize', function() { if (window.innerWidth >= 992) closeSidebar(); });
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebar(); });
 </script>
 
 {% block extra_js %}{% endblock %}
