@@ -1,110 +1,96 @@
 {% extends "base.html" %}
-
-{% block title %}Daily Sales Report - Medical Store Management{% endblock %}
-{% block page_title %}Daily Sales Report{% endblock %}
+{% block title %}Stock Report - PharmaCare{% endblock %}
+{% block page_title %}Stock Report{% endblock %}
 
 {% block content %}
-<div class="row mb-4">
-    <div class="col-md-6">
-        <form method="GET" class="d-flex">
-            <input type="date" name="date" class="form-control me-2" 
-                   value="{{ selected_date.strftime('%Y-%m-%d') }}">
-            <button type="submit" class="btn btn-primary">
-                <i class="bi bi-search"></i> View
-            </button>
-        </form>
-    </div>
-    <div class="col-md-6 text-md-end mt-3 mt-md-0">
-        <a href="{{ url_for('reports') }}" class="btn btn-outline-secondary">
-            <i class="bi bi-arrow-left"></i> Back to Reports
-        </a>
-        <button onclick="window.print()" class="btn btn-outline-primary">
-            <i class="bi bi-printer"></i> Print
-        </button>
-    </div>
-</div>
-
-<!-- Summary Cards -->
-<div class="row g-4 mb-4">
-    <div class="col-md-4">
-        <div class="card bg-primary text-white">
-            <div class="card-body">
-                <h6>Total Sales</h6>
-                <h2>{{ total_sales }}</h2>
+<!-- Stats -->
+<div class="row g-2 g-md-3 mb-3">
+    <div class="col-6 col-md-3">
+        <div class="card bg-primary text-white text-center h-100">
+            <div class="card-body py-2">
+                <h5 class="mb-0">₹{{ "%.0f"|format(total_stock_value) }}</h5>
+                <small>Stock Value</small>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card bg-success text-white">
-            <div class="card-body">
-                <h6>Total Revenue</h6>
-                <h2>₹{{ "%.2f"|format(total_revenue) }}</h2>
+    <div class="col-6 col-md-3">
+        <div class="card bg-success text-white text-center h-100">
+            <div class="card-body py-2">
+                <h5 class="mb-0">₹{{ "%.0f"|format(total_retail_value) }}</h5>
+                <small>Retail Value</small>
             </div>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="card bg-info text-white">
-            <div class="card-body">
-                <h6>Items Sold</h6>
-                <h2>{{ total_items }}</h2>
+    <div class="col-6 col-md-3">
+        <div class="card bg-info text-white text-center h-100">
+            <div class="card-body py-2">
+                <h5 class="mb-0">₹{{ "%.0f"|format(potential_profit) }}</h5>
+                <small>Potential Profit</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card bg-warning text-dark text-center h-100">
+            <div class="card-body py-2">
+                <h5 class="mb-0">{{ low_stock_count }} / {{ out_of_stock_count }}</h5>
+                <small>Low / Out</small>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Sales Table -->
+<!-- Stock Table -->
 <div class="card">
     <div class="card-header">
-        <h5 class="mb-0">
-            <i class="bi bi-receipt"></i> Sales on {{ selected_date.strftime('%d %B %Y') }}
-        </h5>
+        <h6 class="mb-0"><i class="bi bi-box-seam"></i> Current Stock</h6>
     </div>
-    <div class="card-body">
-        {% if sales %}
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>Invoice No</th>
-                            <th>Time</th>
-                            <th>Customer</th>
-                            <th>Items</th>
-                            <th class="text-end">Amount</th>
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for sale in sales %}
-                        <tr>
-                            <td><strong>{{ sale.invoice_no }}</strong></td>
-                            <td>{{ sale.sale_date.strftime('%I:%M %p') }}</td>
-                            <td>{{ sale.customer_name or 'Walk-in Customer' }}</td>
-                            <td>{{ sale.items|length }}</td>
-                            <td class="text-end">₹{{ "%.2f"|format(sale.total_amount) }}</td>
-                            <td class="text-center">
-                                <a href="{{ url_for('view_bill', sale_id=sale.id) }}" 
-                                   class="btn btn-sm btn-outline-primary" target="_blank">
-                                    <i class="bi bi-eye"></i>
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                    <tfoot class="table-secondary">
-                        <tr>
-                            <td colspan="4" class="text-end"><strong>Total:</strong></td>
-                            <td class="text-end"><strong>₹{{ "%.2f"|format(total_revenue) }}</strong></td>
-                            <td></td>
-                        </tr>
-                    </tfoot>
-                </table>
-            </div>
-        {% else %}
-            <div class="text-center py-5">
-                <i class="bi bi-inbox text-muted" style="font-size: 4rem;"></i>
-                <h4 class="text-muted mt-3">No sales on this date</h4>
-            </div>
-        {% endif %}
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Medicine</th>
+                        <th class="d-none d-md-table-cell">Type</th>
+                        <th class="text-center">Stock</th>
+                        <th class="text-end d-none d-sm-table-cell">Purchase ₹</th>
+                        <th class="text-end">Selling ₹</th>
+                        <th class="text-end d-none d-md-table-cell">Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for m in medicines %}
+                    <tr class="{% if m.quantity == 0 %}table-danger{% elif m.is_low_stock %}table-warning{% endif %}">
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong>{{ m.name }}</strong>
+                            <div class="d-md-none small text-muted">{{ m.type_display }}</div>
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            <span class="badge bg-{{ 'info' if m.is_countable else 'secondary' }}">
+                                {{ m.type_display }}
+                            </span>
+                        </td>
+                        <td class="text-center">
+                            <strong class="{{ 'text-danger' if m.quantity == 0 else '' }}">
+                                {{ m.quantity }}
+                            </strong>
+                            {% if m.is_countable %}
+                            <small class="text-muted">units</small>
+                            {% endif %}
+                        </td>
+                        <td class="text-end d-none d-sm-table-cell">₹{{ "%.2f"|format(m.purchase_price) }}</td>
+                        <td class="text-end">₹{{ "%.2f"|format(m.selling_price) }}</td>
+                        <td class="text-end d-none d-md-table-cell">₹{{ "%.2f"|format(m.stock_value) }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">No medicines found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 {% endblock %}

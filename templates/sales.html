@@ -1,43 +1,41 @@
 {% extends "base.html" %}
-
-{% block title %}Sales - Medical Store Management{% endblock %}
+{% block title %}Sales - PharmaCare{% endblock %}
 {% block page_title %}New Sale{% endblock %}
 
 {% block content %}
-<div class="row">
-    <!-- Search and Cart Section -->
-    <div class="col-lg-7">
-        <div class="card mb-4">
+<div class="row g-2 g-lg-3">
+    <!-- Search and Cart -->
+    <div class="col-12 col-lg-7">
+        <div class="card mb-3">
             <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="bi bi-search"></i> Search Medicine
-                </h5>
+                <h5 class="mb-0"><i class="bi bi-search"></i> Search Medicine</h5>
             </div>
             <div class="card-body">
                 <div class="mb-3">
                     <input type="text" id="searchMedicine" class="form-control form-control-lg"
-                           placeholder="Type medicine name or batch number to search...">
+                           placeholder="Type medicine name or batch..." autocomplete="off">
                 </div>
-                <div id="searchResults" class="list-group"></div>
+                <div id="searchResults" class="list-group"
+                     style="max-height: 250px; overflow-y: auto;"></div>
             </div>
         </div>
 
-        <!-- Cart Section -->
+        <!-- Cart -->
         <div class="card">
             <div class="card-header bg-success text-white">
                 <h5 class="mb-0">
-                    <i class="bi bi-cart3"></i> Shopping Cart
+                    <i class="bi bi-cart3"></i> Cart
                     <span class="badge bg-light text-dark ms-2" id="cartCount">0</span>
                 </h5>
             </div>
-            <div class="card-body">
+            <div class="card-body p-0 p-sm-3">
                 <div class="table-responsive">
-                    <table class="table table-hover" id="cartTable">
+                    <table class="table table-hover mb-0" id="cartTable">
                         <thead>
                             <tr>
                                 <th>Medicine</th>
-                                <th>Batch</th>
-                                <th class="text-center">Qty / Units</th>
+                                <th class="d-none d-sm-table-cell">Batch</th>
+                                <th class="text-center">Qty</th>
                                 <th class="text-end">Price</th>
                                 <th class="text-end">Subtotal</th>
                                 <th></th>
@@ -47,13 +45,13 @@
                             <tr id="emptyCart">
                                 <td colspan="6" class="text-center text-muted py-4">
                                     <i class="bi bi-cart-x" style="font-size: 2rem;"></i>
-                                    <p class="mb-0 mt-2">Cart is empty. Search and add medicines.</p>
+                                    <p class="mb-0 mt-2">Cart is empty.</p>
                                 </td>
                             </tr>
                         </tbody>
                         <tfoot class="table-dark" id="cartFooter" style="display: none;">
                             <tr>
-                                <td colspan="4" class="text-end"><strong>Total Amount:</strong></td>
+                                <td colspan="4" class="text-end"><strong>Total:</strong></td>
                                 <td class="text-end"><strong id="totalAmount">₹0.00</strong></td>
                                 <td></td>
                             </tr>
@@ -64,13 +62,11 @@
         </div>
     </div>
 
-    <!-- Checkout Section -->
-    <div class="col-lg-5">
-        <div class="card sticky-top" style="top: 20px;">
+    <!-- Checkout -->
+    <div class="col-12 col-lg-5">
+        <div class="card sticky-lg-top" style="top: 70px;">
             <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">
-                    <i class="bi bi-receipt"></i> Checkout
-                </h5>
+                <h5 class="mb-0"><i class="bi bi-receipt"></i> Checkout</h5>
             </div>
             <div class="card-body">
                 <div class="mb-3">
@@ -78,92 +74,86 @@
                     <input type="text" id="customerName" class="form-control"
                            placeholder="Enter customer name">
                 </div>
-
                 <hr>
-
                 <div class="d-flex justify-content-between mb-2">
-                    <span>Items in Cart:</span>
+                    <span>Items:</span>
                     <strong id="checkoutItems">0</strong>
                 </div>
                 <div class="d-flex justify-content-between mb-3">
-                    <span>Total Amount:</span>
+                    <span>Total:</span>
                     <strong class="text-success fs-4" id="checkoutTotal">₹0.00</strong>
                 </div>
-
-                <button type="button" id="processBtn" class="btn btn-success btn-lg w-100" disabled>
-                    <i class="bi bi-check-circle"></i> Process Sale
-                </button>
-
-                <button type="button" id="clearCartBtn" class="btn btn-outline-danger w-100 mt-2">
-                    <i class="bi bi-trash"></i> Clear Cart
-                </button>
+                <div class="d-grid gap-2">
+                    <button type="button" id="processBtn" class="btn btn-success btn-lg" disabled>
+                        <i class="bi bi-check-circle"></i> Process Sale
+                    </button>
+                    <button type="button" id="clearCartBtn" class="btn btn-outline-danger">
+                        <i class="bi bi-trash"></i> Clear Cart
+                    </button>
+                </div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ═══════════════ Add to Cart Modal ═══════════════ -->
+<!-- Add to Cart Modal -->
 <div class="modal fade" id="addToCartModal" tabindex="-1">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
             <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">
-                    <i class="bi bi-cart-plus"></i> Add to Cart
-                </h5>
+                <h5 class="modal-title"><i class="bi bi-cart-plus"></i> Add to Cart</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <!-- Hidden fields to store medicine metadata -->
                 <input type="hidden" id="selectedMedicineId">
                 <input type="hidden" id="selectedMedicineType">
                 <input type="hidden" id="selectedUnitsPerPack">
 
-                <h5 id="selectedMedicineName"></h5>
+                <h5 id="selectedMedicineName" class="text-break"></h5>
                 <p class="text-muted mb-1">
                     Batch: <code id="selectedBatch"></code> |
                     Price: ₹<span id="selectedPrice"></span>
                 </p>
-                <!-- Medicine type badge -->
                 <p class="mb-3">
                     Type: <span class="badge bg-info" id="selectedTypeDisplay"></span>
                     <span id="unitsPerPackInfo" style="display:none;">
-                        &nbsp;|&nbsp; <strong id="unitsPerPackValue"></strong> per strip/pack
+                        | <strong id="unitsPerPackValue"></strong> per strip
                     </span>
                 </p>
                 <p class="mb-3">
-                    Available Stock: <strong id="selectedStock"></strong>
+                    Available: <strong id="selectedStock"></strong>
                     <span id="stockUnitLabel"></span>
                 </p>
 
-                <!-- ── PACK QUANTITY (always visible) ── -->
+                <!-- Pack Quantity -->
                 <div class="mb-3" id="packQuantitySection">
                     <label for="quantity" class="form-label fw-bold">
                         <i class="bi bi-box-seam"></i>
                         <span id="quantityLabel">Quantity (Packs)</span>
                     </label>
-                    <input type="number" id="quantity" class="form-control" min="0" value="0">
+                    <input type="number" id="quantity" class="form-control" min="0" value="0"
+                           inputmode="numeric">
                     <div class="form-text" id="packHelp"></div>
-                    <div class="form-text text-danger" id="quantityError" style="display: none;"></div>
+                    <div class="form-text text-danger" id="quantityError" style="display:none;"></div>
                 </div>
 
-                <!-- ── INDIVIDUAL UNITS (tablet/capsule only) ── -->
-                <div class="mb-3" id="unitsSection" style="display: none;">
+                <!-- Individual Units (tablet/capsule) -->
+                <div class="mb-3" id="unitsSection" style="display:none;">
                     <label for="unitCount" class="form-label fw-bold">
                         <i class="bi bi-capsule"></i>
-                        <span id="unitLabel">Number of Tablets/Capsules</span>
+                        <span id="unitLabel">Loose Tablets/Capsules</span>
                     </label>
-                    <input type="number" id="unitCount" class="form-control" min="0" value="0">
-                    <div class="form-text" id="unitHelp">
-                        Enter the number of individual tablets or capsules.
-                    </div>
-                    <div class="form-text text-danger" id="unitError" style="display: none;"></div>
+                    <input type="number" id="unitCount" class="form-control" min="0" value="0"
+                           inputmode="numeric">
+                    <div class="form-text" id="unitHelp"></div>
+                    <div class="form-text text-danger" id="unitError" style="display:none;"></div>
                 </div>
 
-                <!-- ── Total units being sold (for countable) ── -->
-                <div class="mb-3" id="totalUnitsInfo" style="display: none;">
+                <!-- Total units info -->
+                <div class="mb-3" id="totalUnitsInfo" style="display:none;">
                     <div class="alert alert-info py-2 mb-0">
                         <i class="bi bi-calculator"></i>
-                        Total units: <strong id="totalUnitsSelling">0</strong>
+                        Total: <strong id="totalUnitsSelling">0</strong>
                         <span class="text-muted" id="totalUnitsBreakdown"></span>
                     </div>
                 </div>
@@ -177,22 +167,22 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                 <button type="button" class="btn btn-success" id="addToCartBtn">
-                    <i class="bi bi-cart-plus"></i> Add to Cart
+                    <i class="bi bi-cart-plus"></i> Add
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ═══════════════ Success Modal ═══════════════ -->
+<!-- Success Modal -->
 <div class="modal fade" id="successModal" tabindex="-1" data-bs-backdrop="static">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
-            <div class="modal-body text-center py-5">
-                <i class="bi bi-check-circle text-success" style="font-size: 4rem;"></i>
-                <h3 class="mt-3">Sale Completed!</h3>
-                <p class="text-muted">Invoice No: <strong id="successInvoice"></strong></p>
-                <div class="d-grid gap-2 mt-4">
+            <div class="modal-body text-center py-4">
+                <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
+                <h4 class="mt-3">Sale Completed!</h4>
+                <p class="text-muted">Invoice: <strong id="successInvoice"></strong></p>
+                <div class="d-grid gap-2 mt-3">
                     <a href="#" id="printBillBtn" class="btn btn-primary" target="_blank">
                         <i class="bi bi-printer"></i> Print Bill
                     </a>
@@ -208,404 +198,226 @@
 
 {% block extra_js %}
 <script>
-// ═══════════════════════════════════════════════════════════
-// CART DATA
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+// CART DATA & CONSTANTS
+// ═══════════════════════════════════════════
 let cart = [];
 let debounceTimer;
-
-// Currently selected medicine metadata (set when modal opens)
 let currentMedicine = null;
-
-// Countable types that support individual unit selling
 const COUNTABLE_TYPES = ['tablet', 'capsule'];
 
-// ═══════════════════════════════════════════════════════════
-// DOM ELEMENTS
-// ═══════════════════════════════════════════════════════════
-const searchInput       = document.getElementById('searchMedicine');
-const searchResults     = document.getElementById('searchResults');
-const cartBody          = document.getElementById('cartBody');
-const emptyCart         = document.getElementById('emptyCart');
-const cartFooter        = document.getElementById('cartFooter');
-const cartCount         = document.getElementById('cartCount');
-const totalAmountEl     = document.getElementById('totalAmount');
-const checkoutItems     = document.getElementById('checkoutItems');
-const checkoutTotal     = document.getElementById('checkoutTotal');
-const processBtn        = document.getElementById('processBtn');
-
-// Modal elements
-const quantityInput     = document.getElementById('quantity');
-const unitCountInput    = document.getElementById('unitCount');
-const unitsSection      = document.getElementById('unitsSection');
-const totalUnitsInfo    = document.getElementById('totalUnitsInfo');
+// DOM refs
+const searchInput = document.getElementById('searchMedicine');
+const searchResults = document.getElementById('searchResults');
+const cartBody = document.getElementById('cartBody');
+const emptyCart = document.getElementById('emptyCart');
+const cartFooter = document.getElementById('cartFooter');
+const cartCount = document.getElementById('cartCount');
+const totalAmountEl = document.getElementById('totalAmount');
+const checkoutItems = document.getElementById('checkoutItems');
+const checkoutTotal = document.getElementById('checkoutTotal');
+const processBtn = document.getElementById('processBtn');
+const quantityInput = document.getElementById('quantity');
+const unitCountInput = document.getElementById('unitCount');
+const unitsSection = document.getElementById('unitsSection');
+const totalUnitsInfo = document.getElementById('totalUnitsInfo');
 const packQuantitySection = document.getElementById('packQuantitySection');
 
-// ═══════════════════════════════════════════════════════════
-// HELPER: Check if medicine type is countable
-// ═══════════════════════════════════════════════════════════
-function isCountable(medicineType) {
-    return COUNTABLE_TYPES.includes(medicineType);
-}
+function isCountable(t) { return COUNTABLE_TYPES.includes(t); }
 
-// ═══════════════════════════════════════════════════════════
-// SEARCH MEDICINE
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+// SEARCH
+// ═══════════════════════════════════════════
 searchInput.addEventListener('input', function() {
     clearTimeout(debounceTimer);
-    const query = this.value.trim();
-
-    if (query.length < 2) {
-        searchResults.innerHTML = '';
-        return;
-    }
+    const q = this.value.trim();
+    if (q.length < 2) { searchResults.innerHTML = ''; return; }
 
     debounceTimer = setTimeout(() => {
-        fetch(`/api/search-medicine?q=${encodeURIComponent(query)}`)
-            .then(res => res.json())
-            .then(data => {
-                if (data.length === 0) {
-                    searchResults.innerHTML =
-                        '<div class="list-group-item text-muted">No medicines found</div>';
-                    return;
-                }
-
-                searchResults.innerHTML = data.map(med => {
-                    // Build type badge
-                    const typeBadge = isCountable(med.medicine_type)
-                        ? `<span class="badge bg-info">${med.medicine_type}</span>`
-                        : `<span class="badge bg-secondary">${med.medicine_type}</span>`;
-
-                    // Stock label
-                    const stockLabel = isCountable(med.medicine_type)
-                        ? `Stock: ${med.quantity} units`
-                        : `Stock: ${med.quantity}`;
-
-                    return `
-                        <button class="list-group-item list-group-item-action d-flex
-                                       justify-content-between align-items-center"
-                                onclick='openAddModal(${JSON.stringify(med).replace(/'/g, "&#39;")})'>
-                            <div>
-                                <strong>${med.name}</strong> ${typeBadge}
-                                <br>
-                                <small class="text-muted">
-                                    Batch: ${med.batch_no} | ${med.generic_name || 'N/A'}
-                                </small>
-                            </div>
-                            <div class="text-end">
-                                <span class="badge bg-success">₹${med.selling_price.toFixed(2)}</span>
-                                <br>
-                                <small class="text-muted">${stockLabel}</small>
-                            </div>
-                        </button>
-                    `;
-                }).join('');
-            });
+        fetch(`/api/search-medicine?q=${encodeURIComponent(q)}`)
+        .then(r => r.json())
+        .then(data => {
+            if (!data.length) {
+                searchResults.innerHTML = '<div class="list-group-item text-muted">No results</div>';
+                return;
+            }
+            searchResults.innerHTML = data.map(med => {
+                const badge = isCountable(med.medicine_type)
+                    ? `<span class="badge bg-info">${med.medicine_type}</span>`
+                    : `<span class="badge bg-secondary">${med.medicine_type}</span>`;
+                const stock = isCountable(med.medicine_type) ? `${med.quantity} units` : `${med.quantity}`;
+                return `
+                <button class="list-group-item list-group-item-action"
+                        onclick='openAddModal(${JSON.stringify(med).replace(/'/g,"&#39;")})'>
+                    <div class="d-flex justify-content-between align-items-center flex-wrap gap-1">
+                        <div>
+                            <strong>${med.name}</strong> ${badge}<br>
+                            <small class="text-muted">Batch: ${med.batch_no}</small>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge bg-success">₹${med.selling_price.toFixed(2)}</span><br>
+                            <small class="text-muted">${stock}</small>
+                        </div>
+                    </div>
+                </button>`;
+            }).join('');
+        });
     }, 300);
 });
 
-// ═══════════════════════════════════════════════════════════
-// OPEN ADD-TO-CART MODAL
-// ═══════════════════════════════════════════════════════════
-function openAddModal(medicine) {
-    // Store full medicine object
-    currentMedicine = medicine;
+// ═══════════════════════════════════════════
+// OPEN MODAL
+// ═══════════════════════════════════════════
+function openAddModal(med) {
+    currentMedicine = med;
+    const c = isCountable(med.medicine_type);
+    const upp = med.units_per_pack || 0;
 
-    const countable = isCountable(medicine.medicine_type);
-    const unitsPerPack = medicine.units_per_pack || 0;
-
-    // Populate hidden fields
-    document.getElementById('selectedMedicineId').value = medicine.id;
-    document.getElementById('selectedMedicineType').value = medicine.medicine_type;
-    document.getElementById('selectedUnitsPerPack').value = unitsPerPack;
-
-    // Populate display fields
-    document.getElementById('selectedMedicineName').textContent = medicine.name;
-    document.getElementById('selectedBatch').textContent = medicine.batch_no;
-    document.getElementById('selectedPrice').textContent = medicine.selling_price.toFixed(2);
+    document.getElementById('selectedMedicineId').value = med.id;
+    document.getElementById('selectedMedicineType').value = med.medicine_type;
+    document.getElementById('selectedUnitsPerPack').value = upp;
+    document.getElementById('selectedMedicineName').textContent = med.name;
+    document.getElementById('selectedBatch').textContent = med.batch_no;
+    document.getElementById('selectedPrice').textContent = med.selling_price.toFixed(2);
     document.getElementById('selectedTypeDisplay').textContent =
-        medicine.medicine_type.charAt(0).toUpperCase() + medicine.medicine_type.slice(1);
+        med.medicine_type.charAt(0).toUpperCase() + med.medicine_type.slice(1);
+    document.getElementById('selectedStock').textContent = med.quantity;
+    document.getElementById('stockUnitLabel').textContent = c ? ' units' : ' packs';
 
-    // Stock display
-    const stockEl = document.getElementById('selectedStock');
-    const stockUnitLabel = document.getElementById('stockUnitLabel');
-    stockEl.textContent = medicine.quantity;
+    const uppInfo = document.getElementById('unitsPerPackInfo');
+    if (c && upp > 0) {
+        uppInfo.style.display = 'inline';
+        document.getElementById('unitsPerPackValue').textContent = upp + ' units';
+    } else { uppInfo.style.display = 'none'; }
 
-    if (countable) {
-        stockUnitLabel.textContent = ' units (individual tablets/capsules)';
-    } else {
-        stockUnitLabel.textContent = ' packs';
-    }
-
-    // Units per pack info
-    const unitsPerPackInfo = document.getElementById('unitsPerPackInfo');
-    if (countable && unitsPerPack > 0) {
-        unitsPerPackInfo.style.display = 'inline';
-        document.getElementById('unitsPerPackValue').textContent = unitsPerPack + ' units';
-    } else {
-        unitsPerPackInfo.style.display = 'none';
-    }
-
-    // ── Configure modal fields based on medicine type ──
-    if (countable) {
-        // COUNTABLE: show both pack and unit fields
-        // Pack field label
+    if (c) {
         document.getElementById('quantityLabel').textContent = 'Number of Strips/Packs';
-
-        if (unitsPerPack > 0) {
-            document.getElementById('packHelp').textContent =
-                `Each strip/pack contains ${unitsPerPack} ${medicine.medicine_type}s`;
+        if (upp > 0) {
+            document.getElementById('packHelp').textContent = `Each strip = ${upp} ${med.medicine_type}s`;
             packQuantitySection.style.display = 'block';
-        } else {
-            // No units_per_pack defined, hide pack section
-            packQuantitySection.style.display = 'none';
-        }
-
-        // Show unit input
+        } else { packQuantitySection.style.display = 'none'; }
         unitsSection.style.display = 'block';
         document.getElementById('unitLabel').textContent =
-            medicine.medicine_type === 'capsule'
-                ? 'Number of Loose Capsules'
-                : 'Number of Loose Tablets';
-        document.getElementById('unitHelp').textContent =
-            `Enter individual ${medicine.medicine_type}s (not in full strips)`;
-
-        // Show total units summary
+            med.medicine_type === 'capsule' ? 'Loose Capsules' : 'Loose Tablets';
+        document.getElementById('unitHelp').textContent = `Individual ${med.medicine_type}s`;
         totalUnitsInfo.style.display = 'block';
-
-        // Reset values
         quantityInput.value = 0;
         unitCountInput.value = 0;
-        quantityInput.max = unitsPerPack > 0
-            ? Math.floor(medicine.quantity / unitsPerPack)
-            : 0;
-
+        quantityInput.max = upp > 0 ? Math.floor(med.quantity / upp) : 0;
     } else {
-        // NON-COUNTABLE: only pack quantity
         document.getElementById('quantityLabel').textContent = 'Quantity';
         document.getElementById('packHelp').textContent = '';
         packQuantitySection.style.display = 'block';
         unitsSection.style.display = 'none';
         totalUnitsInfo.style.display = 'none';
-
         quantityInput.value = 1;
-        quantityInput.max = medicine.quantity;
+        quantityInput.max = med.quantity;
     }
 
-    // Clear errors
     document.getElementById('quantityError').style.display = 'none';
     document.getElementById('unitError').style.display = 'none';
-
-    // Calculate initial subtotal
     recalcModalSubtotal();
-
-    // Show modal
     new bootstrap.Modal(document.getElementById('addToCartModal')).show();
 }
 
-// ═══════════════════════════════════════════════════════════
-// MODAL: Recalculate subtotal and total units
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+// RECALC SUBTOTAL
+// ═══════════════════════════════════════════
 function recalcModalSubtotal() {
     if (!currentMedicine) return;
-
-    const countable = isCountable(currentMedicine.medicine_type);
-    const unitsPerPack = currentMedicine.units_per_pack || 0;
+    const c = isCountable(currentMedicine.medicine_type);
+    const upp = currentMedicine.units_per_pack || 0;
     const price = currentMedicine.selling_price;
     const stock = currentMedicine.quantity;
-
     const packs = parseInt(quantityInput.value) || 0;
-    const looseUnits = parseInt(unitCountInput.value) || 0;
+    const loose = parseInt(unitCountInput.value) || 0;
+    const qE = document.getElementById('quantityError');
+    const uE = document.getElementById('unitError');
+    qE.style.display = 'none'; uE.style.display = 'none';
 
-    let totalUnits = 0;
-    let subtotal = 0;
-
-    const qtyError = document.getElementById('quantityError');
-    const unitError = document.getElementById('unitError');
-    qtyError.style.display = 'none';
-    unitError.style.display = 'none';
-
-    if (countable) {
-        // Calculate total individual units being sold
-        const unitsFromPacks = packs * unitsPerPack;
-        totalUnits = unitsFromPacks + looseUnits;
-
-        // Price per unit = selling_price (which is price per unit for countable)
-        subtotal = totalUnits * price;
-
-        // Update total units display
-        document.getElementById('totalUnitsSelling').textContent = totalUnits;
-
-        let breakdown = '';
-        if (packs > 0 && unitsPerPack > 0) {
-            breakdown += `(${packs} strip${packs > 1 ? 's' : ''} × ${unitsPerPack}`;
-            if (looseUnits > 0) {
-                breakdown += ` + ${looseUnits} loose`;
-            }
-            breakdown += ')';
-        } else if (looseUnits > 0) {
-            breakdown = `(${looseUnits} loose)`;
-        }
-        document.getElementById('totalUnitsBreakdown').textContent = breakdown;
-
-        // Validation
-        if (totalUnits > stock) {
-            unitError.textContent = `Total ${totalUnits} exceeds available stock of ${stock}`;
-            unitError.style.display = 'block';
-        }
-        if (totalUnits < 1 && (packs > 0 || looseUnits > 0)) {
-            // This shouldn't happen but safety check
-        }
-        if (looseUnits < 0) {
-            unitError.textContent = 'Cannot be negative';
-            unitError.style.display = 'block';
-        }
-        if (packs < 0) {
-            qtyError.textContent = 'Cannot be negative';
-            qtyError.style.display = 'block';
-        }
+    let sub = 0;
+    if (c) {
+        const tot = (packs * upp) + loose;
+        sub = tot * price;
+        document.getElementById('totalUnitsSelling').textContent = tot;
+        let bd = '';
+        if (packs > 0 && upp > 0) {
+            bd = `(${packs} strip${packs>1?'s':''} × ${upp}`;
+            if (loose > 0) bd += ` + ${loose} loose`;
+            bd += ')';
+        } else if (loose > 0) bd = `(${loose} loose)`;
+        document.getElementById('totalUnitsBreakdown').textContent = bd;
+        if (tot > stock) { uE.textContent = `Exceeds stock (${stock})`; uE.style.display = 'block'; }
+        if (packs < 0) { qE.textContent = 'Cannot be negative'; qE.style.display = 'block'; }
+        if (loose < 0) { uE.textContent = 'Cannot be negative'; uE.style.display = 'block'; }
     } else {
-        // Non-countable: simple pack quantity
-        totalUnits = packs;
-        subtotal = packs * price;
-
-        if (packs > stock) {
-            qtyError.textContent = `Only ${stock} available in stock`;
-            qtyError.style.display = 'block';
-        }
-        if (packs < 1) {
-            qtyError.textContent = 'Quantity must be at least 1';
-            qtyError.style.display = 'block';
-        }
+        sub = packs * price;
+        if (packs > stock) { qE.textContent = `Only ${stock} available`; qE.style.display = 'block'; }
+        if (packs < 1) { qE.textContent = 'Min 1 required'; qE.style.display = 'block'; }
     }
-
-    document.getElementById('subtotal').textContent = subtotal.toFixed(2);
+    document.getElementById('subtotal').textContent = sub.toFixed(2);
 }
 
-// ── Event listeners for quantity inputs ──
 quantityInput.addEventListener('input', recalcModalSubtotal);
 unitCountInput.addEventListener('input', recalcModalSubtotal);
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // ADD TO CART
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 document.getElementById('addToCartBtn').addEventListener('click', function() {
     if (!currentMedicine) return;
-
-    const medicineId = currentMedicine.id;
-    const name = currentMedicine.name;
-    const batchNo = currentMedicine.batch_no;
-    const price = currentMedicine.selling_price;
-    const stock = currentMedicine.quantity;
-    const countable = isCountable(currentMedicine.medicine_type);
-    const unitsPerPack = currentMedicine.units_per_pack || 0;
-    const medType = currentMedicine.medicine_type;
-
+    const mid = currentMedicine.id, name = currentMedicine.name, batch = currentMedicine.batch_no;
+    const price = currentMedicine.selling_price, stock = currentMedicine.quantity;
+    const c = isCountable(currentMedicine.medicine_type);
+    const upp = currentMedicine.units_per_pack || 0, mt = currentMedicine.medicine_type;
     const packs = parseInt(quantityInput.value) || 0;
-    const looseUnits = parseInt(unitCountInput.value) || 0;
+    const loose = parseInt(unitCountInput.value) || 0;
 
-    let totalUnits = 0;
-    let displayQty = '';
-    let subtotal = 0;
-    let cartQty = 0;    // quantity field in cart (packs for non-countable, 0 for unit-selling)
-    let cartUnits = 0;  // units field in cart (individual units for countable)
-
-    if (countable) {
-        const unitsFromPacks = packs * unitsPerPack;
-        totalUnits = unitsFromPacks + looseUnits;
-
-        if (totalUnits < 1) {
-            alert('Please enter at least 1 tablet/capsule.');
-            return;
-        }
-        if (totalUnits > stock) {
-            alert(`Cannot sell ${totalUnits} units. Only ${stock} available.`);
-            return;
-        }
-
-        cartUnits = totalUnits;
-        cartQty = 0;  // Not selling by packs
-        subtotal = totalUnits * price;
-
-        // Display string for cart table
-        if (packs > 0 && looseUnits > 0) {
-            displayQty = `${packs} strip${packs > 1 ? 's' : ''} + ${looseUnits} loose = ${totalUnits}`;
-        } else if (packs > 0) {
-            displayQty = `${packs} strip${packs > 1 ? 's' : ''} (${totalUnits} units)`;
-        } else {
-            displayQty = `${totalUnits} ${medType}${totalUnits > 1 ? 's' : ''}`;
-        }
+    let cQ = 0, cU = 0, sub = 0, disp = '';
+    if (c) {
+        const tot = (packs * upp) + loose;
+        if (tot < 1) { alert('Enter at least 1 unit.'); return; }
+        if (tot > stock) { alert(`Only ${stock} available.`); return; }
+        cU = tot; sub = tot * price;
+        if (packs > 0 && loose > 0) disp = `${packs}s + ${loose} = ${tot}`;
+        else if (packs > 0) disp = `${packs} strip${packs>1?'s':''} (${tot})`;
+        else disp = `${tot} ${mt}${tot>1?'s':''}`;
     } else {
-        if (packs < 1) {
-            alert('Quantity must be at least 1.');
-            return;
-        }
-        if (packs > stock) {
-            alert(`Cannot sell ${packs}. Only ${stock} available.`);
-            return;
-        }
-
-        cartQty = packs;
-        cartUnits = 0;
-        subtotal = packs * price;
-        displayQty = `${packs}`;
+        if (packs < 1) { alert('Min 1 required.'); return; }
+        if (packs > stock) { alert(`Only ${stock} available.`); return; }
+        cQ = packs; sub = packs * price; disp = `${packs}`;
     }
 
-    // Check if already in cart
-    const existingIndex = cart.findIndex(item => item.medicine_id === medicineId);
-
-    if (existingIndex > -1) {
-        // Update existing cart item
-        const existing = cart[existingIndex];
-
-        if (countable) {
-            const newUnits = existing.units + cartUnits;
-            if (newUnits > stock) {
-                alert(`Cannot add more. Total would be ${newUnits} but only ${stock} available.`);
-                return;
-            }
-            existing.units = newUnits;
-            existing.subtotal = newUnits * price;
-            existing.display_qty = `${newUnits} ${medType}${newUnits > 1 ? 's' : ''}`;
+    const ei = cart.findIndex(i => i.medicine_id === mid);
+    if (ei > -1) {
+        if (c) {
+            const nu = cart[ei].units + cU;
+            if (nu > stock) { alert(`Max ${stock}.`); return; }
+            cart[ei].units = nu; cart[ei].subtotal = nu * price;
+            cart[ei].display_qty = `${nu} ${mt}${nu>1?'s':''}`;
         } else {
-            const newQty = existing.quantity + cartQty;
-            if (newQty > stock) {
-                alert(`Cannot add more. Only ${stock} available.`);
-                return;
-            }
-            existing.quantity = newQty;
-            existing.subtotal = newQty * price;
-            existing.display_qty = `${newQty}`;
+            const nq = cart[ei].quantity + cQ;
+            if (nq > stock) { alert(`Max ${stock}.`); return; }
+            cart[ei].quantity = nq; cart[ei].subtotal = nq * price;
+            cart[ei].display_qty = `${nq}`;
         }
     } else {
-        // Add new cart item
         cart.push({
-            medicine_id: medicineId,
-            name: name,
-            batch_no: batchNo,
-            unit_price: price,
-            quantity: cartQty,
-            units: cartUnits,
-            max_stock: stock,
-            subtotal: subtotal,
-            medicine_type: medType,
-            units_per_pack: unitsPerPack,
-            is_countable: countable,
-            display_qty: displayQty
+            medicine_id: mid, name, batch_no: batch, unit_price: price,
+            quantity: cQ, units: cU, max_stock: stock, subtotal: sub,
+            medicine_type: mt, units_per_pack: upp, is_countable: c, display_qty: disp
         });
     }
-
     updateCartDisplay();
     bootstrap.Modal.getInstance(document.getElementById('addToCartModal')).hide();
-    searchInput.value = '';
-    searchResults.innerHTML = '';
+    searchInput.value = ''; searchResults.innerHTML = '';
 });
 
-// ═══════════════════════════════════════════════════════════
-// UPDATE CART DISPLAY
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
+// CART DISPLAY
+// ═══════════════════════════════════════════
 function updateCartDisplay() {
-    if (cart.length === 0) {
+    if (!cart.length) {
         emptyCart.style.display = 'table-row';
         cartFooter.style.display = 'none';
         processBtn.disabled = true;
@@ -615,161 +427,96 @@ function updateCartDisplay() {
         processBtn.disabled = false;
     }
 
-    cartBody.innerHTML = cart.map((item, index) => {
-        // For countable items, show unit-based quantity editing
-        let qtyCell = '';
+    cartBody.innerHTML = cart.map((item, i) => {
+        let qc;
         if (item.is_countable) {
-            qtyCell = `
-                <div class="d-flex align-items-center justify-content-center gap-1">
-                    <input type="number" class="form-control form-control-sm text-center"
-                           style="width: 70px;"
-                           value="${item.units}" min="1" max="${item.max_stock}"
-                           onchange="updateCartUnits(${index}, this.value)">
-                    <small class="text-muted">units</small>
-                </div>
-            `;
-        } else {
-            qtyCell = `
+            qc = `<div class="d-flex align-items-center justify-content-center gap-1">
                 <input type="number" class="form-control form-control-sm text-center"
-                       style="width: 70px; display: inline-block;"
-                       value="${item.quantity}" min="1" max="${item.max_stock}"
-                       onchange="updateQuantity(${index}, this.value)">
-            `;
+                    style="width:60px;" value="${item.units}" min="1" max="${item.max_stock}"
+                    onchange="updateCartUnits(${i},this.value)" inputmode="numeric">
+                <small class="text-muted d-none d-sm-inline">u</small>
+            </div>`;
+        } else {
+            qc = `<input type="number" class="form-control form-control-sm text-center"
+                    style="width:60px;" value="${item.quantity}" min="1" max="${item.max_stock}"
+                    onchange="updateQuantity(${i},this.value)" inputmode="numeric">`;
         }
-
-        return `
-            <tr>
-                <td>
-                    ${item.name}
-                    ${item.is_countable
-                        ? '<br><small class="text-info">' + item.display_qty + '</small>'
-                        : ''}
-                </td>
-                <td><code>${item.batch_no}</code></td>
-                <td class="text-center">${qtyCell}</td>
-                <td class="text-end">₹${item.unit_price.toFixed(2)}</td>
-                <td class="text-end">₹${item.subtotal.toFixed(2)}</td>
-                <td>
-                    <button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${index})">
-                        <i class="bi bi-trash"></i>
-                    </button>
-                </td>
-            </tr>
-        `;
+        return `<tr>
+            <td>
+                ${item.name}
+                ${item.is_countable ? '<br><small class="text-info">'+item.display_qty+'</small>' : ''}
+            </td>
+            <td class="d-none d-sm-table-cell"><code>${item.batch_no}</code></td>
+            <td class="text-center">${qc}</td>
+            <td class="text-end">₹${item.unit_price.toFixed(2)}</td>
+            <td class="text-end">₹${item.subtotal.toFixed(2)}</td>
+            <td><button class="btn btn-sm btn-outline-danger" onclick="removeFromCart(${i})"><i class="bi bi-trash"></i></button></td>
+        </tr>`;
     }).join('');
 
-    if (cart.length === 0) {
-        cartBody.innerHTML = `
-            <tr id="emptyCart">
-                <td colspan="6" class="text-center text-muted py-4">
-                    <i class="bi bi-cart-x" style="font-size: 2rem;"></i>
-                    <p class="mb-0 mt-2">Cart is empty. Search and add medicines.</p>
-                </td>
-            </tr>
-        `;
+    if (!cart.length) {
+        cartBody.innerHTML = `<tr id="emptyCart"><td colspan="6" class="text-center text-muted py-4">
+            <i class="bi bi-cart-x" style="font-size:2rem;"></i>
+            <p class="mb-0 mt-2">Cart is empty.</p></td></tr>`;
     }
 
-    // Totals
-    const total = cart.reduce((sum, item) => sum + item.subtotal, 0);
-    const itemCount = cart.length;
-
-    cartCount.textContent = itemCount;
+    const total = cart.reduce((s, i) => s + i.subtotal, 0);
+    cartCount.textContent = cart.length;
     totalAmountEl.textContent = '₹' + total.toFixed(2);
-    checkoutItems.textContent = itemCount;
+    checkoutItems.textContent = cart.length;
     checkoutTotal.textContent = '₹' + total.toFixed(2);
 }
 
-// ═══════════════════════════════════════════════════════════
-// CART: Update quantity (non-countable / packs)
-// ═══════════════════════════════════════════════════════════
-function updateQuantity(index, qty) {
-    qty = parseInt(qty);
-    if (qty < 1) qty = 1;
-    if (qty > cart[index].max_stock) qty = cart[index].max_stock;
+function updateQuantity(i, q) {
+    q = Math.max(1, Math.min(parseInt(q)||1, cart[i].max_stock));
+    cart[i].quantity = q; cart[i].subtotal = q * cart[i].unit_price;
+    cart[i].display_qty = `${q}`; updateCartDisplay();
+}
 
-    cart[index].quantity = qty;
-    cart[index].subtotal = qty * cart[index].unit_price;
-    cart[index].display_qty = `${qty}`;
+function updateCartUnits(i, u) {
+    u = Math.max(1, Math.min(parseInt(u)||1, cart[i].max_stock));
+    cart[i].units = u; cart[i].subtotal = u * cart[i].unit_price;
+    cart[i].display_qty = `${u} ${cart[i].medicine_type}${u>1?'s':''}`;
     updateCartDisplay();
 }
 
-// ═══════════════════════════════════════════════════════════
-// CART: Update units (countable - tablets/capsules)
-// ═══════════════════════════════════════════════════════════
-function updateCartUnits(index, units) {
-    units = parseInt(units);
-    if (units < 1) units = 1;
-    if (units > cart[index].max_stock) units = cart[index].max_stock;
+function removeFromCart(i) { cart.splice(i, 1); updateCartDisplay(); }
 
-    const medType = cart[index].medicine_type;
-    cart[index].units = units;
-    cart[index].subtotal = units * cart[index].unit_price;
-    cart[index].display_qty = `${units} ${medType}${units > 1 ? 's' : ''}`;
-    updateCartDisplay();
-}
-
-// ═══════════════════════════════════════════════════════════
-// CART: Remove item
-// ═══════════════════════════════════════════════════════════
-function removeFromCart(index) {
-    cart.splice(index, 1);
-    updateCartDisplay();
-}
-
-// ═══════════════════════════════════════════════════════════
-// CLEAR CART
-// ═══════════════════════════════════════════════════════════
 document.getElementById('clearCartBtn').addEventListener('click', function() {
-    if (cart.length === 0) return;
-    if (confirm('Are you sure you want to clear the cart?')) {
-        cart = [];
-        updateCartDisplay();
-    }
+    if (!cart.length) return;
+    if (confirm('Clear cart?')) { cart = []; updateCartDisplay(); }
 });
 
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // PROCESS SALE
-// ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 document.getElementById('processBtn').addEventListener('click', function() {
-    if (cart.length === 0) return;
-
-    const customerName = document.getElementById('customerName').value.trim();
-
+    if (!cart.length) return;
+    const cn = document.getElementById('customerName').value.trim();
     this.disabled = true;
     this.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Processing...';
-
-    // Build payload — include both quantity and units for each item
-    const payload = {
-        items: cart.map(item => ({
-            medicine_id: item.medicine_id,
-            quantity: item.quantity,
-            units: item.units,
-            unit_price: item.unit_price,
-            subtotal: item.subtotal
-        })),
-        customer_name: customerName
-    };
 
     fetch('/api/process-sale', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+            items: cart.map(i => ({
+                medicine_id: i.medicine_id, quantity: i.quantity,
+                units: i.units, unit_price: i.unit_price, subtotal: i.subtotal
+            })),
+            customer_name: cn
+        })
     })
-    .then(res => res.json())
-    .then(data => {
-        if (data.success) {
-            document.getElementById('successInvoice').textContent = data.invoice_no;
-            document.getElementById('printBillBtn').href = `/bill/${data.sale_id}`;
+    .then(r => r.json())
+    .then(d => {
+        if (d.success) {
+            document.getElementById('successInvoice').textContent = d.invoice_no;
+            document.getElementById('printBillBtn').href = `/bill/${d.sale_id}`;
             new bootstrap.Modal(document.getElementById('successModal')).show();
-            cart = [];
-            updateCartDisplay();
-        } else {
-            alert('Error: ' + data.message);
-        }
+            cart = []; updateCartDisplay();
+        } else alert('Error: ' + d.message);
     })
-    .catch(err => {
-        alert('Error processing sale: ' + err);
-    })
+    .catch(e => alert('Error: ' + e))
     .finally(() => {
         this.disabled = false;
         this.innerHTML = '<i class="bi bi-check-circle"></i> Process Sale';

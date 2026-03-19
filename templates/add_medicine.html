@@ -1,11 +1,10 @@
 {% extends "base.html" %}
-
-{% block title %}Add Medicine - Medical Store Management{% endblock %}
+{% block title %}Add Medicine - PharmaCare{% endblock %}
 {% block page_title %}Add New Medicine{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
-    <div class="col-lg-8">
+    <div class="col-12 col-md-10 col-lg-8">
         <div class="card">
             <div class="card-header">
                 <h5 class="mb-0">
@@ -15,15 +14,15 @@
             <div class="card-body">
                 <form method="POST" id="addMedicineForm">
                     <!-- Medicine Name & Generic Name -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
+                    <div class="row g-2 g-md-3 mb-3">
+                        <div class="col-12 col-sm-6">
                             <label for="name" class="form-label">
                                 Medicine Name <span class="text-danger">*</span>
                             </label>
                             <input type="text" name="name" id="name" class="form-control"
                                    required placeholder="e.g., Paracetamol 500mg">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-sm-6">
                             <label for="generic_name" class="form-label">Generic Name</label>
                             <input type="text" name="generic_name" id="generic_name"
                                    class="form-control" placeholder="e.g., Acetaminophen">
@@ -31,8 +30,8 @@
                     </div>
 
                     <!-- Medicine Type & Units Per Pack -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
+                    <div class="row g-2 g-md-3 mb-3">
+                        <div class="col-12 col-sm-6">
                             <label for="medicine_type" class="form-label">
                                 Medicine Type <span class="text-danger">*</span>
                             </label>
@@ -56,28 +55,29 @@
                                 <option value="other">Other</option>
                             </select>
                         </div>
-                        <div class="col-md-6" id="unitsPerPackSection">
+                        <div class="col-12 col-sm-6" id="unitsPerPackSection">
                             <label for="units_per_pack" class="form-label">
                                 Units Per Strip/Pack
                             </label>
                             <input type="number" name="units_per_pack" id="units_per_pack"
-                                   class="form-control" min="1" placeholder="e.g., 10">
+                                   class="form-control" min="1" placeholder="e.g., 10"
+                                   inputmode="numeric">
                             <div class="form-text">
-                                How many tablets/capsules in one strip or pack?
+                                How many tablets/capsules in one strip?
                             </div>
                         </div>
                     </div>
 
                     <!-- Batch No & Expiry Date -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
+                    <div class="row g-2 g-md-3 mb-3">
+                        <div class="col-12 col-sm-6">
                             <label for="batch_no" class="form-label">
                                 Batch Number <span class="text-danger">*</span>
                             </label>
                             <input type="text" name="batch_no" id="batch_no" class="form-control"
                                    required placeholder="e.g., BT-2024-001">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-sm-6">
                             <label for="expiry_date" class="form-label">
                                 Expiry Date <span class="text-danger">*</span>
                             </label>
@@ -87,19 +87,19 @@
                     </div>
 
                     <!-- Quantity -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
+                    <div class="row g-2 g-md-3 mb-3">
+                        <div class="col-12 col-sm-6">
                             <label for="quantity" class="form-label">
                                 <span id="quantityLabel">Quantity</span>
                                 <span class="text-danger">*</span>
                             </label>
                             <input type="number" name="quantity" id="quantity" class="form-control"
-                                   required min="0" value="0" placeholder="0">
+                                   required min="0" value="0" placeholder="0" inputmode="numeric">
                             <div class="form-text" id="quantityHelp">
                                 Enter the total number of units in stock.
                             </div>
                         </div>
-                        <div class="col-md-6" id="quantityBreakdownSection" style="display:none;">
+                        <div class="col-12 col-sm-6" id="quantityBreakdownSection" style="display:none;">
                             <label class="form-label">&nbsp;</label>
                             <div class="alert alert-info py-2 mb-0" id="quantityBreakdown">
                                 <i class="bi bi-calculator"></i>
@@ -109,24 +109,24 @@
                     </div>
 
                     <!-- Prices -->
-                    <div class="row mb-3">
-                        <div class="col-md-6">
+                    <div class="row g-2 g-md-3 mb-3">
+                        <div class="col-12 col-sm-6">
                             <label for="purchase_price" class="form-label">
                                 Purchase Price (₹) <span class="text-danger">*</span>
-                                <span class="text-muted" id="purchasePriceLabel"></span>
+                                <span class="text-muted small" id="purchasePriceLabel"></span>
                             </label>
                             <input type="number" name="purchase_price" id="purchase_price"
                                    class="form-control" required min="0" step="0.01"
-                                   placeholder="0.00">
+                                   placeholder="0.00" inputmode="decimal">
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-12 col-sm-6">
                             <label for="selling_price" class="form-label">
                                 Selling Price (₹) <span class="text-danger">*</span>
-                                <span class="text-muted" id="sellingPriceLabel"></span>
+                                <span class="text-muted small" id="sellingPriceLabel"></span>
                             </label>
                             <input type="number" name="selling_price" id="selling_price"
                                    class="form-control" required min="0" step="0.01"
-                                   placeholder="0.00">
+                                   placeholder="0.00" inputmode="decimal">
                         </div>
                     </div>
 
@@ -138,7 +138,7 @@
                     </div>
 
                     <!-- Buttons -->
-                    <div class="d-flex gap-2">
+                    <div class="d-flex flex-wrap gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-check-circle"></i> Add Medicine
                         </button>
@@ -184,7 +184,6 @@ function toggleUnitsPerPack() {
         purchaseLabel.textContent = '';
         sellingLabel.textContent = '';
     }
-
     updateBreakdown();
 }
 
@@ -199,9 +198,7 @@ function updateBreakdown() {
         const strips = Math.floor(qty / unitsPerPack);
         const loose = qty % unitsPerPack;
         let msg = `${qty} ${type}s = ${strips} strip${strips !== 1 ? 's' : ''}`;
-        if (loose > 0) {
-            msg += ` + ${loose} loose`;
-        }
+        if (loose > 0) msg += ` + ${loose} loose`;
         text.textContent = msg;
         section.style.display = 'block';
     } else {
@@ -209,7 +206,6 @@ function updateBreakdown() {
     }
 }
 
-// Event listeners
 document.getElementById('quantity').addEventListener('input', updateBreakdown);
 document.getElementById('units_per_pack').addEventListener('input', updateBreakdown);
 

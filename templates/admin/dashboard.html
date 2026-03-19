@@ -1,103 +1,153 @@
 {% extends "base.html" %}
-{% block title %}Admin Dashboard{% endblock %}
+{% block title %}Admin Dashboard - PharmaCare{% endblock %}
+{% block page_title %}Platform Administration{% endblock %}
+
 {% block content %}
-<div class="container-fluid mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2><i class="fas fa-shield-alt"></i> Platform Administration</h2>
+<!-- Platform Stats -->
+<div class="row g-2 g-md-3 mb-4">
+    <div class="col-6 col-md-3">
+        <div class="card stat-card bg-primary text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h3>{{ total_stores }}</h3>
+                        <p class="mb-0 small">Active Stores</p>
+                    </div>
+                    <i class="bi bi-shop stat-icon d-none d-sm-block"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card stat-card bg-success text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h3>{{ total_users }}</h3>
+                        <p class="mb-0 small">Total Users</p>
+                    </div>
+                    <i class="bi bi-people stat-icon d-none d-sm-block"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card stat-card bg-info text-white h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h3>{{ total_medicines }}</h3>
+                        <p class="mb-0 small">Total Medicines</p>
+                    </div>
+                    <i class="bi bi-capsule stat-icon d-none d-sm-block"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-6 col-md-3">
+        <div class="card stat-card bg-warning text-dark h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <h3>₹{{ "%.0f"|format(today_revenue) }}</h3>
+                        <p class="mb-0 small">Today's Revenue</p>
+                    </div>
+                    <i class="bi bi-currency-rupee stat-icon d-none d-sm-block"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Actions -->
+<div class="row g-2 mb-4">
+    <div class="col-auto">
         <a href="{{ url_for('admin_add_store') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Add New Store
+            <i class="bi bi-plus-circle"></i>
+            <span class="d-none d-sm-inline">Add New Store</span>
+            <span class="d-sm-none">Add Store</span>
         </a>
     </div>
-
-    <!-- Platform Stats -->
-    <div class="row mb-4">
-        <div class="col-md-3">
-            <div class="card bg-primary text-white">
-                <div class="card-body text-center">
-                    <h3>{{ total_stores }}</h3>
-                    <p class="mb-0">Active Stores</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-success text-white">
-                <div class="card-body text-center">
-                    <h3>{{ total_users }}</h3>
-                    <p class="mb-0">Total Users</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-info text-white">
-                <div class="card-body text-center">
-                    <h3>{{ total_medicines }}</h3>
-                    <p class="mb-0">Total Medicines</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card bg-warning text-dark">
-                <div class="card-body text-center">
-                    <h3>₹{{ "%.2f"|format(today_revenue) }}</h3>
-                    <p class="mb-0">Today's Revenue (All Stores)</p>
-                </div>
-            </div>
-        </div>
+    <div class="col-auto">
+        <a href="{{ url_for('admin_stores') }}" class="btn btn-outline-primary">
+            <i class="bi bi-shop"></i>
+            <span class="d-none d-sm-inline">View All Stores</span>
+            <span class="d-sm-none">Stores</span>
+        </a>
     </div>
+</div>
 
-    <!-- Store List -->
-    <div class="card">
-        <div class="card-header">
-            <h5 class="mb-0"><i class="fas fa-store"></i> All Stores</h5>
-        </div>
-        <div class="card-body">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Store Name</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Status</th>
-                            <th>Created</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for store in stores %}
-                        <tr>
-                            <td>{{ store.id }}</td>
-                            <td><strong>{{ store.name }}</strong></td>
-                            <td>{{ store.phone or '-' }}</td>
-                            <td>{{ store.email or '-' }}</td>
-                            <td>
-                                {% if store.is_active %}
-                                    <span class="badge bg-success">Active</span>
-                                {% else %}
-                                    <span class="badge bg-danger">Inactive</span>
-                                {% endif %}
-                            </td>
-                            <td>{{ store.created_at.strftime('%Y-%m-%d') }}</td>
-                            <td>
-                                <a href="{{ url_for('admin_store_users', store_id=store.id) }}" 
-                                   class="btn btn-sm btn-info" title="View Users">
-                                    <i class="fas fa-users"></i>
+<!-- Store List -->
+<div class="card">
+    <div class="card-header">
+        <h6 class="mb-0"><i class="bi bi-shop"></i> All Stores</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Store Name</th>
+                        <th class="d-none d-md-table-cell">Phone</th>
+                        <th class="d-none d-lg-table-cell">Email</th>
+                        <th class="text-center">Status</th>
+                        <th class="d-none d-sm-table-cell">Created</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for store in stores %}
+                    <tr>
+                        <td>{{ store.id }}</td>
+                        <td>
+                            <strong>{{ store.name }}</strong>
+                            <!-- Show phone below name on mobile -->
+                            <div class="d-md-none small text-muted">
+                                {{ store.phone or '' }}
+                            </div>
+                        </td>
+                        <td class="d-none d-md-table-cell">{{ store.phone or '-' }}</td>
+                        <td class="d-none d-lg-table-cell">{{ store.email or '-' }}</td>
+                        <td class="text-center">
+                            {% if store.is_active %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+                        <td class="d-none d-sm-table-cell small">
+                            {{ store.created_at.strftime('%d/%m/%Y') }}
+                        </td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('admin_store_users', store_id=store.id) }}"
+                                   class="btn btn-outline-info" title="Users">
+                                    <i class="bi bi-people"></i>
                                 </a>
-                                <form method="POST" action="{{ url_for('admin_toggle_store', store_id=store.id) }}" 
+                                <form method="POST"
+                                      action="{{ url_for('admin_toggle_store', store_id=store.id) }}"
                                       style="display:inline;">
-                                    <button type="submit" 
-                                            class="btn btn-sm {{ 'btn-danger' if store.is_active else 'btn-success' }}"
-                                            title="{{ 'Deactivate' if store.is_active else 'Activate' }}">
-                                        <i class="fas {{ 'fa-ban' if store.is_active else 'fa-check' }}"></i>
+                                    <button type="submit"
+                                            class="btn btn-outline-{{ 'danger' if store.is_active else 'success' }}"
+                                            title="{{ 'Deactivate' if store.is_active else 'Activate' }}"
+                                            onclick="return confirm('Are you sure?')">
+                                        <i class="bi bi-{{ 'ban' if store.is_active else 'check' }}"></i>
                                     </button>
                                 </form>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
+                            </div>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="bi bi-shop" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2">No stores found.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
 </div>

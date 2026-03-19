@@ -1,317 +1,208 @@
 {% extends "base.html" %}
-
-{% block title %}Inventory - Medical Store Management{% endblock %}
+{% block title %}Inventory - PharmaCare{% endblock %}
 {% block page_title %}Inventory Management{% endblock %}
 
 {% block content %}
-
-<div class="card mb-4">
-
-```
-<div class="card-header d-flex justify-content-between align-items-center">
-    <h5 class="mb-0">
-        <i class="bi bi-capsule"></i> Medicine Inventory
-    </h5>
-
-    <a href="{{ url_for('add_medicine') }}" class="btn btn-primary">
-        <i class="bi bi-plus-circle"></i> Add Medicine
-    </a>
-</div>
-
-
-<div class="card-body">
-
-    <!-- SEARCH -->
-    <form method="GET" action="{{ url_for('inventory') }}" class="mb-4">
-        <div class="input-group">
-
-            <input type="text"
-                   name="search"
-                   class="form-control"
-                   placeholder="Search by name, generic name or batch number..."
-                   value="{{ search }}">
-
-            <button type="submit" class="btn btn-outline-primary">
-                <i class="bi bi-search"></i> Search
-            </button>
-
-            {% if search %}
-            <a href="{{ url_for('inventory') }}" class="btn btn-outline-secondary">
-                <i class="bi bi-x-circle"></i> Clear
-            </a>
-            {% endif %}
-
-        </div>
-    </form>
-
-
-    {% if search %}
-    <div class="alert alert-info">
-        <i class="bi bi-info-circle"></i>
-        Showing results for "<strong>{{ search }}</strong>"
-        — {{ medicines|length }} medicine(s) found.
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <h5 class="mb-0">
+            <i class="bi bi-capsule"></i> Medicine Inventory
+        </h5>
+        <a href="{{ url_for('add_medicine') }}" class="btn btn-primary">
+            <i class="bi bi-plus-circle"></i>
+            <span class="d-none d-sm-inline">Add Medicine</span>
+            <span class="d-sm-none">Add</span>
+        </a>
     </div>
-    {% endif %}
-
-
-    <!-- INVENTORY TABLE -->
-    <div class="table-responsive">
-
-        <table class="table table-hover align-middle">
-
-            <thead class="table-dark">
-                <tr>
-                    <th>#</th>
-                    <th>Medicine</th>
-                    <th>Type</th>
-                    <th>Batch</th>
-
-                    <th class="text-center">Units</th>
-                    <th class="text-center">Packs</th>
-
-                    <th class="text-end">Purchase ₹</th>
-                    <th class="text-end">Selling ₹</th>
-
-                    <th>Expiry</th>
-                    <th>Supplier</th>
-                    <th class="text-center">Actions</th>
-                </tr>
-            </thead>
-
-
-            <tbody>
-
-            {% for medicine in medicines %}
-
-            {% set packs = 0 %}
-            {% set loose = 0 %}
-
-            {% if medicine.is_countable and medicine.units_per_pack %}
-                {% set packs = medicine.quantity // medicine.units_per_pack %}
-                {% set loose = medicine.quantity % medicine.units_per_pack %}
-            {% endif %}
-
-            <tr class="
-                {% if medicine.is_expired %}table-danger
-                {% elif medicine.is_expiring_soon %}table-warning
-                {% elif medicine.quantity == 0 %}table-secondary
-                {% elif medicine.is_low_stock %}table-warning
+    <div class="card-body">
+        <!-- Search Bar -->
+        <form method="GET" action="{{ url_for('inventory') }}" class="mb-3">
+            <div class="input-group">
+                <input type="text" name="search" class="form-control"
+                       placeholder="Search name, generic name or batch..."
+                       value="{{ search }}">
+                <button type="submit" class="btn btn-outline-primary">
+                    <i class="bi bi-search"></i>
+                </button>
+                {% if search %}
+                <a href="{{ url_for('inventory') }}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle"></i>
+                </a>
                 {% endif %}
-            ">
+            </div>
+        </form>
 
-                <td>{{ loop.index }}</td>
+        {% if search %}
+        <div class="alert alert-info py-2">
+            <i class="bi bi-info-circle"></i>
+            "<strong>{{ search }}</strong>" — {{ medicines|length }} found
+        </div>
+        {% endif %}
 
-                <td>
-                    <strong>{{ medicine.name }}</strong>
-                    {% if medicine.generic_name %}
-                    <br>
-                    <small class="text-muted">{{ medicine.generic_name }}</small>
-                    {% endif %}
-                </td>
+        <!-- Inventory Table -->
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Medicine</th>
+                        <th class="d-none d-lg-table-cell">Type</th>
+                        <th class="d-none d-md-table-cell">Batch</th>
+                        <th class="text-center">Stock</th>
+                        <th class="text-end d-none d-sm-table-cell">Buy ₹</th>
+                        <th class="text-end">Sell ₹</th>
+                        <th class="d-none d-md-table-cell">Expiry</th>
+                        <th class="d-none d-xl-table-cell">Supplier</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for medicine in medicines %}
+                    <tr class="{% if medicine.is_expired %}table-danger{% elif medicine.is_expiring_soon %}table-warning{% elif medicine.quantity == 0 %}table-secondary{% elif medicine.is_low_stock %}table-warning{% endif %}">
+                        <td>{{ loop.index }}</td>
+                        <td>
+                            <strong>{{ medicine.name }}</strong>
+                            {% if medicine.generic_name %}
+                            <br><small class="text-muted">{{ medicine.generic_name }}</small>
+                            {% endif %}
+                            <!-- Mobile: show type and batch below name -->
+                            <div class="d-lg-none small text-muted mt-1">
+                                <span class="badge bg-{{ 'info' if medicine.is_countable else 'secondary' }} me-1">
+                                    {{ medicine.type_display }}
+                                </span>
+                                <span class="d-md-none"><code>{{ medicine.batch_no }}</code></span>
+                            </div>
+                            <!-- Mobile: show expiry -->
+                            <div class="d-md-none small mt-1">
+                                {% if medicine.is_expired %}
+                                    <span class="badge bg-danger">EXP: {{ medicine.expiry_date.strftime('%d/%m/%Y') }}</span>
+                                {% elif medicine.is_expiring_soon %}
+                                    <span class="badge bg-warning text-dark">EXP: {{ medicine.expiry_date.strftime('%d/%m/%Y') }}</span>
+                                {% else %}
+                                    <span class="text-muted">Exp: {{ medicine.expiry_date.strftime('%d/%m/%Y') }}</span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="d-none d-lg-table-cell">
+                            <span class="badge bg-{{ 'info' if medicine.is_countable else 'secondary' }}">
+                                {{ medicine.type_display }}
+                            </span>
+                            {% if medicine.is_countable and medicine.units_per_pack %}
+                            <br><small class="text-muted">{{ medicine.units_per_pack }}/strip</small>
+                            {% endif %}
+                        </td>
+                        <td class="d-none d-md-table-cell"><code>{{ medicine.batch_no }}</code></td>
+                        <td class="text-center">
+                            {% if medicine.is_countable %}
+                                <strong class="{{ 'text-danger' if medicine.quantity == 0 else ('text-warning' if medicine.is_low_stock else 'text-success') }}">
+                                    {{ medicine.quantity }}
+                                </strong>
+                                <small class="text-muted d-none d-sm-inline">units</small>
 
-                <td>
-                    <span class="badge {{ 'bg-info' if medicine.is_countable else 'bg-secondary' }}">
-                        {{ medicine.type_display }}
-                    </span>
+                                {% if medicine.units_per_pack and medicine.units_per_pack > 0 %}
+                                <br>
+                                <small class="text-muted d-none d-sm-inline">
+                                    ({{ medicine.quantity // medicine.units_per_pack }}s
+                                    {% if medicine.quantity % medicine.units_per_pack > 0 %}
+                                    +{{ medicine.quantity % medicine.units_per_pack }}
+                                    {% endif %})
+                                </small>
+                                {% endif %}
 
-                    {% if medicine.units_per_pack %}
-                    <br>
-                    <small class="text-muted">
-                        {{ medicine.units_per_pack }}/strip
-                    </small>
-                    {% endif %}
-                </td>
-
-                <td>
-                    <code>{{ medicine.batch_no }}</code>
-                </td>
-
-
-                <!-- UNITS -->
-                <td class="text-center">
-
-                    <strong class="
-                        {% if medicine.quantity == 0 %}text-danger
-                        {% elif medicine.is_low_stock %}text-warning
-                        {% else %}text-success
-                        {% endif %}
-                    ">
-                        {{ medicine.quantity }}
-                    </strong>
-
-                    <br>
-                    <small class="text-muted">units</small>
-
-                    {% if loose > 0 %}
-                    <br>
-                    <small class="text-muted">{{ loose }} loose</small>
-                    {% endif %}
-
-                </td>
-
-
-                <!-- PACKS -->
-                <td class="text-center">
-
-                    {% if medicine.is_countable and medicine.units_per_pack %}
-                        <strong>{{ packs }}</strong>
-                        <br>
-                        <small class="text-muted">strips</small>
+                                {% if medicine.quantity == 0 %}
+                                <br><span class="badge bg-danger">Out</span>
+                                {% elif medicine.is_low_stock %}
+                                <br><span class="badge bg-warning text-dark">Low</span>
+                                {% endif %}
+                            {% else %}
+                                <strong class="{{ 'text-danger' if medicine.quantity == 0 else ('text-warning' if medicine.is_low_stock else 'text-success') }}">
+                                    {{ medicine.quantity }}
+                                </strong>
+                                {% if medicine.quantity == 0 %}
+                                <br><span class="badge bg-danger">Out</span>
+                                {% elif medicine.is_low_stock %}
+                                <br><span class="badge bg-warning text-dark">Low</span>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                        <td class="text-end d-none d-sm-table-cell">₹{{ "%.2f"|format(medicine.purchase_price) }}</td>
+                        <td class="text-end">
+                            ₹{{ "%.2f"|format(medicine.selling_price) }}
+                            {% if medicine.is_countable %}
+                            <br><small class="text-muted d-none d-sm-inline">/unit</small>
+                            {% endif %}
+                        </td>
+                        <td class="d-none d-md-table-cell">
+                            {% if medicine.is_expired %}
+                                <span class="text-danger fw-bold">
+                                    {{ medicine.expiry_date.strftime('%d/%m/%Y') }}
+                                </span>
+                                <br><span class="badge bg-danger">EXPIRED</span>
+                            {% elif medicine.is_expiring_soon %}
+                                <span class="text-warning fw-bold">
+                                    {{ medicine.expiry_date.strftime('%d/%m/%Y') }}
+                                </span>
+                                <br><span class="badge bg-warning text-dark">Soon</span>
+                            {% else %}
+                                {{ medicine.expiry_date.strftime('%d/%m/%Y') }}
+                            {% endif %}
+                        </td>
+                        <td class="d-none d-xl-table-cell">{{ medicine.supplier or '-' }}</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{{ url_for('edit_medicine', id=medicine.id) }}"
+                                   class="btn btn-outline-primary" title="Edit">
+                                    <i class="bi bi-pencil"></i>
+                                </a>
+                                <form method="POST"
+                                      action="{{ url_for('delete_medicine', id=medicine.id) }}"
+                                      style="display:inline;"
+                                      onsubmit="return confirm('Remove {{ medicine.name }}?')">
+                                    <button type="submit" class="btn btn-outline-danger" title="Remove">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
                     {% else %}
-                        -
-                    {% endif %}
+                    <tr>
+                        <td colspan="10" class="text-center text-muted py-4">
+                            <i class="bi bi-inbox" style="font-size: 2rem;"></i>
+                            <p class="mb-0 mt-2">
+                                {% if search %}
+                                    No medicines found for "{{ search }}".
+                                {% else %}
+                                    No medicines. Click "Add Medicine" to start.
+                                {% endif %}
+                            </p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
 
-                </td>
-
-
-                <!-- PURCHASE -->
-                <td class="text-end">
-                    ₹{{ "%.2f"|format(medicine.purchase_price) }}
-                </td>
-
-
-                <!-- SELLING -->
-                <td class="text-end">
-
-                    ₹{{ "%.2f"|format(medicine.selling_price) }}
-
-                    {% if medicine.is_countable %}
-                    <br>
-                    <small class="text-muted">/unit</small>
-                    {% endif %}
-
-                </td>
-
-
-                <!-- EXPIRY -->
-                <td>
-
-                    {% if medicine.is_expired %}
-
-                        <span class="text-danger fw-bold">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            {{ medicine.expiry_date.strftime('%d/%m/%Y') }}
-                        </span>
-
-                        <br>
-                        <span class="badge bg-danger">Expired</span>
-
-                    {% elif medicine.is_expiring_soon %}
-
-                        <span class="text-warning fw-bold">
-                            <i class="bi bi-exclamation-circle"></i>
-                            {{ medicine.expiry_date.strftime('%d/%m/%Y') }}
-                        </span>
-
-                        <br>
-                        <span class="badge bg-warning text-dark">Expiring Soon</span>
-
-                    {% else %}
-
-                        {{ medicine.expiry_date.strftime('%d/%m/%Y') }}
-
-                    {% endif %}
-
-                </td>
-
-
-                <!-- SUPPLIER -->
-                <td>
-                    {{ medicine.supplier or '-' }}
-                </td>
-
-
-                <!-- ACTIONS -->
-                <td class="text-center">
-
-                    <div class="btn-group btn-group-sm">
-
-                        <a href="{{ url_for('edit_medicine', id=medicine.id) }}"
-                           class="btn btn-outline-primary">
-
-                           <i class="bi bi-pencil"></i>
-                        </a>
-
-                        <form method="POST"
-                              action="{{ url_for('delete_medicine', id=medicine.id) }}"
-                              style="display:inline"
-                              onsubmit="return confirm('Remove {{ medicine.name }} ?')">
-
-                            <button class="btn btn-outline-danger">
-                                <i class="bi bi-trash"></i>
-                            </button>
-
-                        </form>
-
-                    </div>
-
-                </td>
-
-            </tr>
-
-            {% else %}
-
-            <tr>
-
-                <td colspan="11" class="text-center text-muted py-4">
-
-                    <i class="bi bi-inbox" style="font-size:2rem"></i>
-
-                    <p class="mt-2 mb-0">
-
-                    {% if search %}
-                    No medicines found for "{{ search }}"
-                    {% else %}
-                    No medicines in inventory
-                    {% endif %}
-
-                    </p>
-
-                </td>
-
-            </tr>
-
-            {% endfor %}
-
-            </tbody>
-
-        </table>
-
+        <!-- Summary -->
+        {% if medicines %}
+        <div class="row g-2 mt-3">
+            <div class="col-4">
+                <div class="alert alert-info py-2 mb-0 text-center small">
+                    <strong>{{ medicines|length }}</strong> Items
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="alert alert-warning py-2 mb-0 text-center small">
+                    <strong>{{ medicines|selectattr('is_low_stock')|list|length }}</strong> Low
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="alert alert-danger py-2 mb-0 text-center small">
+                    <strong>{{ medicines|selectattr('is_expired')|list|length }}</strong> Expired
+                </div>
+            </div>
+        </div>
+        {% endif %}
     </div>
-
-
-    <!-- SUMMARY -->
-    {% if medicines %}
-    <div class="row mt-3">
-
-        <div class="col-md-4">
-            <div class="alert alert-info py-2 mb-0">
-                <i class="bi bi-box"></i>
-                Total Items: {{ medicines|length }}
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="alert alert-warning py-2 mb-0">
-                <i class="bi bi-exclamation-triangle"></i>
-                Low Stock:
-                {{ medicines|selectattr('is_low_stock')|list|length }}
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="alert alert-danger py-2 mb-0">
-                <i class="bi bi-calendar-x"></i>
-                Expired:
-                {{ medicines|selectattr('is_expired')|list|length }}
-            </div>
-        </div>
-
-    </div>
-    {% endif %}
-
-</div>
-```
-
 </div>
 {% endblock %}
