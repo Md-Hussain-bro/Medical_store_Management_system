@@ -18,7 +18,6 @@ from flask_login import (
 
 from models import db, User, Store, Medicine, Sale, SaleItem
 
-
 def resource_path(relative_path):
     try:
         base_path = sys._MEIPASS
