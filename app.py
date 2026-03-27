@@ -31,7 +31,6 @@ app = Flask(
     __name__,
     template_folder=resource_path("templates"),
     static_folder=resource_path("static"),
-    instance_path=resource_path("instance")
 )
 
 # Configuration
@@ -163,8 +162,9 @@ def init_db():
     print("Database initialized successfully!")
 
 
-with app.app_context():
-    init_db()
+if not os.path.exists(db_path):
+    with app.app_context():
+        init_db()
 
 
 # Context processor
@@ -275,7 +275,8 @@ def admin_stores():
 @app.route('/admin/stores/add', methods=['GET', 'POST'])
 @superadmin_required
 def admin_add_store():
-    """Create a new store with its owner account"""
+    print("=== ADMIN ADD STORE CALLED ===")
+
     if request.method == 'POST':
         try:
             store_name = request.form.get('store_name', '').strip()
@@ -287,6 +288,9 @@ def admin_add_store():
             owner_username = request.form.get('owner_username', '').strip()
             owner_password = request.form.get('owner_password', '').strip()
             owner_fullname = request.form.get('owner_fullname', '').strip()
+
+            print("DB PATH:", db_path)
+            print("STORE NAME:", store_name)
 
             if not store_name or not owner_username or not owner_password:
                 flash('Store name, owner username and password are required.', 'danger')
@@ -320,11 +324,14 @@ def admin_add_store():
             db.session.add(owner)
 
             db.session.commit()
+            print("STORE SAVED SUCCESSFULLY")   # ✅
+
             flash(f'Store "{store_name}" created with owner "{owner_username}".', 'success')
             return redirect(url_for('admin_stores'))
 
         except Exception as e:
             db.session.rollback()
+            print("ERROR:", str(e))   # ✅
             flash(f'Error creating store: {str(e)}', 'danger')
 
     return render_template('admin/add_store.html')
