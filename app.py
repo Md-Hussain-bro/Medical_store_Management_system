@@ -166,14 +166,10 @@ def init_db():
     db.session.commit()
     print("Database initialized successfully!")
 
-with app.app_context():
-    db.create_all()
-    print("TABLES CREATED IN DATABASE")
-
 if not os.path.exists(db_path):
     with app.app_context():
         init_db()
-        
+
 
 # Context processor
 @app.context_processor
