@@ -1,10 +1,14 @@
 {% extends "base.html" %}
-{% block title %}Manage Stores - PharmaCare{% endblock %}
-{% block page_title %}All Stores{% endblock %}
+{% block title %}Manage Stores - PharmaCare Pro{% endblock %}
+{% block page_title %}Store Management{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-    <h5 class="mb-0"><i class="bi bi-shop"></i> Store Management</h5>
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <div>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">
+            Manage all registered pharmacy stores
+        </p>
+    </div>
     <a href="{{ url_for('admin_add_store') }}" class="btn btn-primary">
         <i class="bi bi-plus-circle"></i>
         <span class="d-none d-sm-inline">Add New Store</span>
@@ -12,76 +16,83 @@
     </a>
 </div>
 
-<div class="card">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Store Name</th>
-                        <th class="d-none d-md-table-cell">Address</th>
-                        <th class="d-none d-sm-table-cell">Phone</th>
-                        <th class="d-none d-lg-table-cell">License No</th>
-                        <th class="text-center">Users</th>
-                        <th class="text-center">Status</th>
-                        <th class="text-center">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for store in stores %}
-                    <tr>
-                        <td>{{ store.id }}</td>
-                        <td>
-                            <strong>{{ store.name }}</strong>
-                            <!-- Mobile: show address and phone below -->
-                            <div class="d-md-none small text-muted mt-1">
-                                {% if store.address %}{{ store.address }}{% endif %}
-                                {% if store.phone %}<br>📞 {{ store.phone }}{% endif %}
-                            </div>
-                        </td>
-                        <td class="d-none d-md-table-cell small">{{ store.address or '-' }}</td>
-                        <td class="d-none d-sm-table-cell">{{ store.phone or '-' }}</td>
-                        <td class="d-none d-lg-table-cell">{{ store.license_no or '-' }}</td>
-                        <td class="text-center">
+<div class="table-container animate-in">
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Store Name</th>
+                    <th class="d-none d-md-table-cell">Address</th>
+                    <th class="d-none d-sm-table-cell">Phone</th>
+                    <th class="d-none d-lg-table-cell">License</th>
+                    <th class="text-center">Users</th>
+                    <th class="text-center">Status</th>
+                    <th class="text-center">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for store in stores %}
+                <tr>
+                    <td style="color: var(--text-muted);">{{ store.id }}</td>
+                    <td>
+                        <strong style="color: var(--text-primary);">{{ store.name }}</strong>
+                        <div class="d-md-none mt-1">
+                            <small style="color: var(--text-muted);">
+                                {% if store.address %}{{ store.address[:40] }}{% if store.address|length > 40 %}...{% endif %}{% endif %}
+                            </small>
+                        </div>
+                    </td>
+                    <td class="d-none d-md-table-cell" style="max-width: 200px;">
+                        <span style="color: var(--text-secondary); font-size: 0.82rem;">
+                            {{ store.address or '—' }}
+                        </span>
+                    </td>
+                    <td class="d-none d-sm-table-cell">{{ store.phone or '—' }}</td>
+                    <td class="d-none d-lg-table-cell" style="color: var(--text-muted);">
+                        {{ store.license_no or '—' }}
+                    </td>
+                    <td class="text-center">
+                        <a href="{{ url_for('admin_store_users', store_id=store.id) }}"
+                           class="badge text-decoration-none"
+                           style="background: var(--info-bg); color: var(--info);">
+                            {{ store.users|length }} user{{ 's' if store.users|length != 1 }}
+                        </a>
+                    </td>
+                    <td class="text-center">
+                        {% if store.is_active %}
+                            <span class="badge-status active">Active</span>
+                        {% else %}
+                            <span class="badge-status inactive">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center gap-1">
                             <a href="{{ url_for('admin_store_users', store_id=store.id) }}"
-                               class="badge bg-info text-decoration-none">
-                                {{ store.users|length }}
+                               class="btn btn-icon btn-sm btn-outline-primary" title="Users">
+                                <i class="bi bi-people"></i>
                             </a>
-                        </td>
-                        <td class="text-center">
-                            {% if store.is_active %}
-                                <span class="badge bg-success">Active</span>
-                            {% else %}
-                                <span class="badge bg-danger">Inactive</span>
-                            {% endif %}
-                        </td>
-                        <td class="text-center">
-                            <div class="btn-group btn-group-sm">
-                                <a href="{{ url_for('admin_store_users', store_id=store.id) }}"
-                                   class="btn btn-outline-info" title="Users">
-                                    <i class="bi bi-people"></i>
-                                </a>
-                                <form method="POST"
-                                      action="{{ url_for('admin_toggle_store', store_id=store.id) }}"
-                                      style="display:inline;">
-                                    <button type="submit"
-                                            class="btn btn-outline-{{ 'danger' if store.is_active else 'success' }}"
-                                            onclick="return confirm('Are you sure?')">
-                                        <i class="bi bi-{{ 'ban' if store.is_active else 'check' }}"></i>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="8" class="text-center text-muted py-4">No stores found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                            <form method="POST"
+                                  action="{{ url_for('admin_toggle_store', store_id=store.id) }}"
+                                  style="display:inline;">
+                                <button type="submit"
+                                        class="btn btn-icon btn-sm {{ 'btn-outline-danger' if store.is_active else 'btn-outline-primary' }}"
+                                        onclick="return confirm('Are you sure?')">
+                                    <i class="bi bi-{{ 'pause-circle' if store.is_active else 'play-circle' }}"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="8" class="text-center py-5" style="color: var(--text-muted);">
+                        No stores found. Create your first store.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

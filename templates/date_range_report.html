@@ -1,123 +1,100 @@
 {% extends "base.html" %}
-{% block title %}Date Range Report - PharmaCare{% endblock %}
+{% block title %}Date Range Report - PharmaCare Pro{% endblock %}
 {% block page_title %}Date Range Report{% endblock %}
 
 {% block content %}
-<!-- Date Range Picker -->
-<div class="card mb-3">
-    <div class="card-body">
-        <form method="GET" class="row g-2 align-items-end">
-            <div class="col-6 col-sm-auto">
-                <label class="form-label small">From</label>
-                <input type="date" name="from_date" class="form-control"
-                       value="{{ start_date.strftime('%Y-%m-%d') }}">
+<div class="card mb-4 animate-in">
+    <div class="card-body py-3">
+        <form method="GET" class="d-flex flex-wrap gap-2 align-items-end">
+            <div style="min-width:140px;">
+                <label class="form-label">From</label>
+                <input type="date" name="from_date" class="form-control" value="{{ start_date.strftime('%Y-%m-%d') }}">
             </div>
-            <div class="col-6 col-sm-auto">
-                <label class="form-label small">To</label>
-                <input type="date" name="to_date" class="form-control"
-                       value="{{ end_date.strftime('%Y-%m-%d') }}">
+            <div style="min-width:140px;">
+                <label class="form-label">To</label>
+                <input type="date" name="to_date" class="form-control" value="{{ end_date.strftime('%Y-%m-%d') }}">
             </div>
-            <div class="col-12 col-sm-auto">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-search"></i> Generate
-                </button>
-            </div>
+            <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Generate</button>
         </form>
     </div>
 </div>
 
-<!-- Stats -->
-<div class="row g-2 g-md-3 mb-3">
+<div class="row g-3 mb-4">
     <div class="col-6">
-        <div class="card bg-primary text-white text-center">
-            <div class="card-body py-2">
-                <h4 class="mb-0">{{ total_sales }}</h4>
-                <small>Total Sales</small>
+        <div class="stat-card stat-primary animate-in">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Total Sales</div>
+                    <div class="stat-card-value">{{ total_sales }}</div>
+                </div>
+                <div class="stat-card-icon"><i class="bi bi-receipt"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6">
-        <div class="card bg-success text-white text-center">
-            <div class="card-body py-2">
-                <h4 class="mb-0">₹{{ "%.0f"|format(total_revenue) }}</h4>
-                <small>Total Revenue</small>
+        <div class="stat-card stat-success animate-in">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Total Revenue</div>
+                    <div class="stat-card-value">₹{{ "%.0f"|format(total_revenue) }}</div>
+                </div>
+                <div class="stat-card-icon"><i class="bi bi-currency-rupee"></i></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Daily Breakdown -->
 {% if daily_data %}
-<div class="card mb-3">
+<div class="table-container mb-4 animate-in">
     <div class="card-header">
-        <h6 class="mb-0"><i class="bi bi-bar-chart"></i> Daily Breakdown</h6>
+        <div class="card-header-title"><i class="bi bi-bar-chart"></i> Daily Breakdown</div>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-sm table-hover mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Date</th>
-                        <th class="text-center">Sales</th>
-                        <th class="text-end">Revenue</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for day, data in daily_data|dictsort(reverse=true) %}
-                    <tr>
-                        <td>{{ day }}</td>
-                        <td class="text-center">{{ data.count }}</td>
-                        <td class="text-end">₹{{ "%.2f"|format(data.revenue) }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead><tr><th>Date</th><th class="text-center">Sales</th><th class="text-end">Revenue</th></tr></thead>
+            <tbody>
+                {% for day, data in daily_data|dictsort(reverse=true) %}
+                <tr>
+                    <td style="color:var(--text-primary);font-weight:500;">{{ day }}</td>
+                    <td class="text-center">{{ data.count }}</td>
+                    <td class="text-end"><strong>₹{{ "%.2f"|format(data.revenue) }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endif %}
 
-<!-- All Sales -->
-<div class="card">
+<div class="table-container animate-in">
     <div class="card-header">
-        <h6 class="mb-0"><i class="bi bi-list-ul"></i> All Sales</h6>
+        <div class="card-header-title"><i class="bi bi-list-ul"></i> All Transactions</div>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Invoice</th>
-                        <th class="d-none d-sm-table-cell">Customer</th>
-                        <th class="text-end">Amount</th>
-                        <th class="d-none d-md-table-cell">Date</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sale in sales %}
-                    <tr>
-                        <td><code class="small">{{ sale.invoice_no }}</code></td>
-                        <td class="d-none d-sm-table-cell">{{ sale.customer_name or 'Walk-in' }}</td>
-                        <td class="text-end">₹{{ "%.2f"|format(sale.total_amount) }}</td>
-                        <td class="d-none d-md-table-cell small">
-                            {{ sale.sale_date.strftime('%d/%m/%Y %I:%M%p') }}
-                        </td>
-                        <td>
-                            <a href="{{ url_for('view_bill', sale_id=sale.id) }}"
-                               class="btn btn-sm btn-outline-primary">
-                                <i class="bi bi-eye"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="5" class="text-center text-muted py-4">No sales found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Invoice</th>
+                    <th class="d-none d-sm-table-cell">Customer</th>
+                    <th class="text-end">Amount</th>
+                    <th class="d-none d-md-table-cell">Date</th>
+                    <th class="text-center" style="width:50px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales %}
+                <tr>
+                    <td><code style="background:var(--bg-input);padding:2px 6px;border-radius:4px;font-size:0.78rem;color:var(--primary);">{{ sale.invoice_no }}</code></td>
+                    <td class="d-none d-sm-table-cell">{{ sale.customer_name or 'Walk-in' }}</td>
+                    <td class="text-end"><strong style="color:var(--text-primary);">₹{{ "%.2f"|format(sale.total_amount) }}</strong></td>
+                    <td class="d-none d-md-table-cell" style="color:var(--text-muted);font-size:0.82rem;">{{ sale.sale_date.strftime('%d/%m/%Y %I:%M%p') }}</td>
+                    <td class="text-center"><a href="{{ url_for('view_bill', sale_id=sale.id) }}" class="btn btn-icon btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center py-5" style="color:var(--text-muted);">No sales found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

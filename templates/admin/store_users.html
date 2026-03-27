@@ -1,72 +1,80 @@
 {% extends "base.html" %}
-{% block title %}{{ store.name }} Users - PharmaCare{% endblock %}
+{% block title %}{{ store.name }} Users - PharmaCare Pro{% endblock %}
 {% block page_title %}{{ store.name }}{% endblock %}
 
 {% block content %}
-<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-3">
+<div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-4">
     <div>
-        <h5 class="mb-1"><i class="bi bi-people"></i> Store Users</h5>
         {% if store.address %}
-        <p class="text-muted small mb-0">{{ store.address }}</p>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">
+            <i class="bi bi-geo-alt"></i> {{ store.address }}
+        </p>
         {% endif %}
     </div>
-    <a href="{{ url_for('admin_stores') }}" class="btn btn-secondary btn-sm">
+    <a href="{{ url_for('admin_stores') }}" class="btn btn-outline-secondary btn-sm">
         <i class="bi bi-arrow-left"></i>
         <span class="d-none d-sm-inline">Back to Stores</span>
         <span class="d-sm-none">Back</span>
     </a>
 </div>
 
-<div class="card">
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Username</th>
-                        <th class="d-none d-sm-table-cell">Full Name</th>
-                        <th class="text-center">Role</th>
-                        <th class="text-center">Status</th>
-                        <th class="d-none d-md-table-cell">Created</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for user in users %}
-                    <tr>
-                        <td>{{ user.id }}</td>
-                        <td>
-                            <strong>{{ user.username }}</strong>
-                            <!-- Mobile: show full name below -->
-                            <div class="d-sm-none small text-muted">
-                                {{ user.full_name or '' }}
-                            </div>
-                        </td>
-                        <td class="d-none d-sm-table-cell">{{ user.full_name or '-' }}</td>
-                        <td class="text-center">
-                            <span class="badge bg-{{ 'primary' if user.role == 'owner' else 'secondary' }}">
-                                {{ user.role|title }}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            {% if user.is_active %}
-                                <span class="badge bg-success">Active</span>
-                            {% else %}
-                                <span class="badge bg-danger">Inactive</span>
-                            {% endif %}
-                        </td>
-                        <td class="d-none d-md-table-cell small">
-                            {{ user.created_at.strftime('%d/%m/%Y') }}
-                        </td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="6" class="text-center text-muted py-4">No users found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+<div class="table-container animate-in">
+    <div class="card-header">
+        <div class="card-header-title">
+            <i class="bi bi-people"></i> Store Users
         </div>
+        <span class="badge" style="background: rgba(99,102,241,0.1); color: var(--primary);">
+            {{ users|length }} user{{ 's' if users|length != 1 }}
+        </span>
+    </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Username</th>
+                    <th class="d-none d-sm-table-cell">Full Name</th>
+                    <th class="text-center">Role</th>
+                    <th class="text-center">Status</th>
+                    <th class="d-none d-md-table-cell">Created</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td style="color: var(--text-muted);">{{ user.id }}</td>
+                    <td>
+                        <strong style="color: var(--text-primary);">{{ user.username }}</strong>
+                        <div class="d-sm-none">
+                            <small style="color: var(--text-muted);">{{ user.full_name or '' }}</small>
+                        </div>
+                    </td>
+                    <td class="d-none d-sm-table-cell">{{ user.full_name or '—' }}</td>
+                    <td class="text-center">
+                        <span class="badge" style="background: {{ 'rgba(99,102,241,0.1)' if user.role == 'owner' else 'var(--bg-input)' }}; color: {{ 'var(--primary)' if user.role == 'owner' else 'var(--text-muted)' }};">
+                            {{ user.role|title }}
+                        </span>
+                    </td>
+                    <td class="text-center">
+                        {% if user.is_active %}
+                            <span class="badge-status active">Active</span>
+                        {% else %}
+                            <span class="badge-status inactive">Inactive</span>
+                        {% endif %}
+                    </td>
+                    <td class="d-none d-md-table-cell" style="color: var(--text-muted); font-size: 0.82rem;">
+                        {{ user.created_at.strftime('%d %b %Y') }}
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" class="text-center py-5" style="color: var(--text-muted);">
+                        No users found for this store.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

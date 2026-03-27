@@ -1,96 +1,68 @@
 {% extends "base.html" %}
-{% block title %}Stock Report - PharmaCare{% endblock %}
+{% block title %}Stock Report - PharmaCare Pro{% endblock %}
 {% block page_title %}Stock Report{% endblock %}
 
 {% block content %}
-<!-- Stats -->
-<div class="row g-2 g-md-3 mb-3">
+<div class="row g-3 mb-4">
     <div class="col-6 col-md-3">
-        <div class="card bg-primary text-white text-center h-100">
-            <div class="card-body py-2">
-                <h5 class="mb-0">₹{{ "%.0f"|format(total_stock_value) }}</h5>
-                <small>Stock Value</small>
-            </div>
+        <div class="stat-card stat-primary animate-in animate-in-delay-1">
+            <div class="stat-card-body"><div class="stat-card-content"><div class="stat-card-label">Stock Value</div><div class="stat-card-value">₹{{ "%.0f"|format(total_stock_value) }}</div></div></div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card bg-success text-white text-center h-100">
-            <div class="card-body py-2">
-                <h5 class="mb-0">₹{{ "%.0f"|format(total_retail_value) }}</h5>
-                <small>Retail Value</small>
-            </div>
+        <div class="stat-card stat-success animate-in animate-in-delay-2">
+            <div class="stat-card-body"><div class="stat-card-content"><div class="stat-card-label">Retail Value</div><div class="stat-card-value">₹{{ "%.0f"|format(total_retail_value) }}</div></div></div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card bg-info text-white text-center h-100">
-            <div class="card-body py-2">
-                <h5 class="mb-0">₹{{ "%.0f"|format(potential_profit) }}</h5>
-                <small>Potential Profit</small>
-            </div>
+        <div class="stat-card stat-info animate-in animate-in-delay-3">
+            <div class="stat-card-body"><div class="stat-card-content"><div class="stat-card-label">Potential Profit</div><div class="stat-card-value">₹{{ "%.0f"|format(potential_profit) }}</div></div></div>
         </div>
     </div>
     <div class="col-6 col-md-3">
-        <div class="card bg-warning text-dark text-center h-100">
-            <div class="card-body py-2">
-                <h5 class="mb-0">{{ low_stock_count }} / {{ out_of_stock_count }}</h5>
-                <small>Low / Out</small>
-            </div>
+        <div class="stat-card stat-warning animate-in animate-in-delay-4">
+            <div class="stat-card-body"><div class="stat-card-content"><div class="stat-card-label">Low / Out</div><div class="stat-card-value">{{ low_stock_count }} / {{ out_of_stock_count }}</div></div></div>
         </div>
     </div>
 </div>
 
-<!-- Stock Table -->
-<div class="card">
+<div class="table-container animate-in">
     <div class="card-header">
-        <h6 class="mb-0"><i class="bi bi-box-seam"></i> Current Stock</h6>
+        <div class="card-header-title"><i class="bi bi-box-seam"></i> Current Stock</div>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Medicine</th>
-                        <th class="d-none d-md-table-cell">Type</th>
-                        <th class="text-center">Stock</th>
-                        <th class="text-end d-none d-sm-table-cell">Purchase ₹</th>
-                        <th class="text-end">Selling ₹</th>
-                        <th class="text-end d-none d-md-table-cell">Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for m in medicines %}
-                    <tr class="{% if m.quantity == 0 %}table-danger{% elif m.is_low_stock %}table-warning{% endif %}">
-                        <td>{{ loop.index }}</td>
-                        <td>
-                            <strong>{{ m.name }}</strong>
-                            <div class="d-md-none small text-muted">{{ m.type_display }}</div>
-                        </td>
-                        <td class="d-none d-md-table-cell">
-                            <span class="badge bg-{{ 'info' if m.is_countable else 'secondary' }}">
-                                {{ m.type_display }}
-                            </span>
-                        </td>
-                        <td class="text-center">
-                            <strong class="{{ 'text-danger' if m.quantity == 0 else '' }}">
-                                {{ m.quantity }}
-                            </strong>
-                            {% if m.is_countable %}
-                            <small class="text-muted">units</small>
-                            {% endif %}
-                        </td>
-                        <td class="text-end d-none d-sm-table-cell">₹{{ "%.2f"|format(m.purchase_price) }}</td>
-                        <td class="text-end">₹{{ "%.2f"|format(m.selling_price) }}</td>
-                        <td class="text-end d-none d-md-table-cell">₹{{ "%.2f"|format(m.stock_value) }}</td>
-                    </tr>
-                    {% else %}
-                    <tr>
-                        <td colspan="7" class="text-center text-muted py-4">No medicines found.</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>#</th><th>Medicine</th><th class="d-none d-md-table-cell">Type</th>
+                    <th class="text-center">Stock</th><th class="text-end d-none d-sm-table-cell">Buy ₹</th>
+                    <th class="text-end">Sell ₹</th><th class="text-end d-none d-md-table-cell">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for m in medicines %}
+                <tr class="{% if m.quantity==0 %}row-danger{% elif m.is_low_stock %}row-warning{% endif %}">
+                    <td style="color:var(--text-muted);">{{ loop.index }}</td>
+                    <td>
+                        <strong style="color:var(--text-primary);">{{ m.name }}</strong>
+                        <div class="d-md-none"><small style="color:var(--text-muted);">{{ m.type_display }}</small></div>
+                    </td>
+                    <td class="d-none d-md-table-cell">
+                        <span class="badge" style="background:{{ 'var(--info-bg)' if m.is_countable else 'var(--bg-input)' }};color:{{ 'var(--info)' if m.is_countable else 'var(--text-muted)' }};">{{ m.type_display }}</span>
+                    </td>
+                    <td class="text-center">
+                        <strong style="color:{{ 'var(--danger)' if m.quantity==0 else 'var(--text-primary)' }}">{{ m.quantity }}</strong>
+                        {% if m.is_countable %}<small style="color:var(--text-muted);"> units</small>{% endif %}
+                    </td>
+                    <td class="text-end d-none d-sm-table-cell">₹{{ "%.2f"|format(m.purchase_price) }}</td>
+                    <td class="text-end">₹{{ "%.2f"|format(m.selling_price) }}</td>
+                    <td class="text-end d-none d-md-table-cell"><strong>₹{{ "%.2f"|format(m.stock_value) }}</strong></td>
+                </tr>
+                {% else %}
+                <tr><td colspan="7" class="text-center py-5" style="color:var(--text-muted);">No medicines found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endblock %}

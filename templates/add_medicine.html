@@ -1,150 +1,94 @@
 {% extends "base.html" %}
-{% block title %}Add Medicine - PharmaCare{% endblock %}
-{% block page_title %}Add New Medicine{% endblock %}
+{% block title %}Add Medicine - PharmaCare Pro{% endblock %}
+{% block page_title %}Add Medicine{% endblock %}
 
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-12 col-md-10 col-lg-8">
-        <div class="card">
+        <div class="card animate-in">
             <div class="card-header">
-                <h5 class="mb-0">
-                    <i class="bi bi-plus-circle"></i> Add New Medicine
-                </h5>
+                <div class="card-header-title">
+                    <i class="bi bi-plus-circle"></i> New Medicine
+                </div>
             </div>
             <div class="card-body">
                 <form method="POST" id="addMedicineForm">
-                    <!-- Medicine Name & Generic Name -->
-                    <div class="row g-2 g-md-3 mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-6">
-                            <label for="name" class="form-label">
-                                Medicine Name <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" name="name" id="name" class="form-control"
-                                   required placeholder="e.g., Paracetamol 500mg">
+                            <label for="name" class="form-label">Medicine Name <span style="color:var(--danger)">*</span></label>
+                            <input type="text" name="name" id="name" class="form-control" required placeholder="e.g., Paracetamol 500mg">
                         </div>
                         <div class="col-12 col-sm-6">
                             <label for="generic_name" class="form-label">Generic Name</label>
-                            <input type="text" name="generic_name" id="generic_name"
-                                   class="form-control" placeholder="e.g., Acetaminophen">
+                            <input type="text" name="generic_name" id="generic_name" class="form-control" placeholder="e.g., Acetaminophen">
                         </div>
                     </div>
 
-                    <!-- Medicine Type & Units Per Pack -->
-                    <div class="row g-2 g-md-3 mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-6">
-                            <label for="medicine_type" class="form-label">
-                                Medicine Type <span class="text-danger">*</span>
-                            </label>
-                            <select name="medicine_type" id="medicine_type" class="form-select"
-                                    onchange="toggleUnitsPerPack()">
-                                <option value="tablet">Tablet</option>
-                                <option value="capsule">Capsule</option>
-                                <option value="syrup">Syrup</option>
-                                <option value="injection">Injection</option>
-                                <option value="cream">Cream</option>
-                                <option value="ointment">Ointment</option>
-                                <option value="drops">Drops</option>
-                                <option value="inhaler">Inhaler</option>
-                                <option value="powder">Powder</option>
-                                <option value="gel">Gel</option>
-                                <option value="lotion">Lotion</option>
-                                <option value="balm">Balm</option>
-                                <option value="spray">Spray</option>
-                                <option value="suppository">Suppository</option>
-                                <option value="patch">Patch</option>
-                                <option value="other">Other</option>
+                            <label for="medicine_type" class="form-label">Type <span style="color:var(--danger)">*</span></label>
+                            <select name="medicine_type" id="medicine_type" class="form-select" onchange="toggleUnitsPerPack()">
+                                <option value="tablet">Tablet</option><option value="capsule">Capsule</option>
+                                <option value="syrup">Syrup</option><option value="injection">Injection</option>
+                                <option value="cream">Cream</option><option value="ointment">Ointment</option>
+                                <option value="drops">Drops</option><option value="inhaler">Inhaler</option>
+                                <option value="powder">Powder</option><option value="gel">Gel</option>
+                                <option value="lotion">Lotion</option><option value="balm">Balm</option>
+                                <option value="spray">Spray</option><option value="suppository">Suppository</option>
+                                <option value="patch">Patch</option><option value="other">Other</option>
                             </select>
                         </div>
                         <div class="col-12 col-sm-6" id="unitsPerPackSection">
-                            <label for="units_per_pack" class="form-label">
-                                Units Per Strip/Pack
-                            </label>
-                            <input type="number" name="units_per_pack" id="units_per_pack"
-                                   class="form-control" min="1" placeholder="e.g., 10"
-                                   inputmode="numeric">
-                            <div class="form-text">
-                                How many tablets/capsules in one strip?
-                            </div>
+                            <label for="units_per_pack" class="form-label">Units Per Strip</label>
+                            <input type="number" name="units_per_pack" id="units_per_pack" class="form-control" min="1" placeholder="e.g., 10" inputmode="numeric">
+                            <div class="form-text">Tablets/capsules per strip</div>
                         </div>
                     </div>
 
-                    <!-- Batch No & Expiry Date -->
-                    <div class="row g-2 g-md-3 mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-6">
-                            <label for="batch_no" class="form-label">
-                                Batch Number <span class="text-danger">*</span>
-                            </label>
-                            <input type="text" name="batch_no" id="batch_no" class="form-control"
-                                   required placeholder="e.g., BT-2024-001">
+                            <label for="batch_no" class="form-label">Batch Number <span style="color:var(--danger)">*</span></label>
+                            <input type="text" name="batch_no" id="batch_no" class="form-control" required placeholder="e.g., BT-2024-001">
                         </div>
                         <div class="col-12 col-sm-6">
-                            <label for="expiry_date" class="form-label">
-                                Expiry Date <span class="text-danger">*</span>
-                            </label>
-                            <input type="date" name="expiry_date" id="expiry_date"
-                                   class="form-control" required>
+                            <label for="expiry_date" class="form-label">Expiry Date <span style="color:var(--danger)">*</span></label>
+                            <input type="date" name="expiry_date" id="expiry_date" class="form-control" required>
                         </div>
                     </div>
 
-                    <!-- Quantity -->
-                    <div class="row g-2 g-md-3 mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-6">
-                            <label for="quantity" class="form-label">
-                                <span id="quantityLabel">Quantity</span>
-                                <span class="text-danger">*</span>
-                            </label>
-                            <input type="number" name="quantity" id="quantity" class="form-control"
-                                   required min="0" value="0" placeholder="0" inputmode="numeric">
-                            <div class="form-text" id="quantityHelp">
-                                Enter the total number of units in stock.
-                            </div>
+                            <label for="quantity" class="form-label"><span id="quantityLabel">Quantity</span> <span style="color:var(--danger)">*</span></label>
+                            <input type="number" name="quantity" id="quantity" class="form-control" required min="0" value="0" inputmode="numeric">
+                            <div class="form-text" id="quantityHelp">Total units in stock</div>
                         </div>
                         <div class="col-12 col-sm-6" id="quantityBreakdownSection" style="display:none;">
                             <label class="form-label">&nbsp;</label>
-                            <div class="alert alert-info py-2 mb-0" id="quantityBreakdown">
-                                <i class="bi bi-calculator"></i>
-                                <span id="breakdownText">—</span>
+                            <div class="alert alert-info py-2 mb-0" style="font-size: 0.82rem;">
+                                <i class="bi bi-calculator"></i> <span id="breakdownText">—</span>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Prices -->
-                    <div class="row g-2 g-md-3 mb-3">
+                    <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-6">
-                            <label for="purchase_price" class="form-label">
-                                Purchase Price (₹) <span class="text-danger">*</span>
-                                <span class="text-muted small" id="purchasePriceLabel"></span>
-                            </label>
-                            <input type="number" name="purchase_price" id="purchase_price"
-                                   class="form-control" required min="0" step="0.01"
-                                   placeholder="0.00" inputmode="decimal">
+                            <label for="purchase_price" class="form-label">Purchase Price ₹ <span style="color:var(--danger)">*</span> <span style="color:var(--text-muted);font-size:0.75rem" id="purchasePriceLabel"></span></label>
+                            <input type="number" name="purchase_price" id="purchase_price" class="form-control" required min="0" step="0.01" placeholder="0.00" inputmode="decimal">
                         </div>
                         <div class="col-12 col-sm-6">
-                            <label for="selling_price" class="form-label">
-                                Selling Price (₹) <span class="text-danger">*</span>
-                                <span class="text-muted small" id="sellingPriceLabel"></span>
-                            </label>
-                            <input type="number" name="selling_price" id="selling_price"
-                                   class="form-control" required min="0" step="0.01"
-                                   placeholder="0.00" inputmode="decimal">
+                            <label for="selling_price" class="form-label">Selling Price ₹ <span style="color:var(--danger)">*</span> <span style="color:var(--text-muted);font-size:0.75rem" id="sellingPriceLabel"></span></label>
+                            <input type="number" name="selling_price" id="selling_price" class="form-control" required min="0" step="0.01" placeholder="0.00" inputmode="decimal">
                         </div>
                     </div>
 
-                    <!-- Supplier -->
-                    <div class="mb-3">
+                    <div class="mb-4">
                         <label for="supplier" class="form-label">Supplier</label>
-                        <input type="text" name="supplier" id="supplier" class="form-control"
-                               placeholder="Supplier name">
+                        <input type="text" name="supplier" id="supplier" class="form-control" placeholder="Supplier name">
                     </div>
 
-                    <!-- Buttons -->
                     <div class="d-flex flex-wrap gap-2">
-                        <button type="submit" class="btn btn-primary">
-                            <i class="bi bi-check-circle"></i> Add Medicine
-                        </button>
-                        <a href="{{ url_for('inventory') }}" class="btn btn-secondary">
-                            <i class="bi bi-arrow-left"></i> Cancel
-                        </a>
+                        <button type="submit" class="btn btn-primary"><i class="bi bi-check-circle"></i> Add Medicine</button>
+                        <a href="{{ url_for('inventory') }}" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i> Cancel</a>
                     </div>
                 </form>
             </div>
@@ -155,61 +99,30 @@
 
 {% block extra_js %}
 <script>
-const COUNTABLE_TYPES = ['tablet', 'capsule', 'suppository'];
-
-function isCountable(type) {
-    return COUNTABLE_TYPES.includes(type);
-}
-
-function toggleUnitsPerPack() {
-    const type = document.getElementById('medicine_type').value;
-    const section = document.getElementById('unitsPerPackSection');
-    const quantityLabel = document.getElementById('quantityLabel');
-    const quantityHelp = document.getElementById('quantityHelp');
-    const purchaseLabel = document.getElementById('purchasePriceLabel');
-    const sellingLabel = document.getElementById('sellingPriceLabel');
-
-    if (isCountable(type)) {
-        section.style.display = 'block';
-        quantityLabel.textContent = 'Total Individual Units in Stock';
-        quantityHelp.innerHTML =
-            '<i class="bi bi-info-circle"></i> Enter the <strong>total number of individual ' +
-            type + 's</strong>. Example: 5 strips × 10 = enter 50.';
-        purchaseLabel.textContent = '(per ' + type + ')';
-        sellingLabel.textContent = '(per ' + type + ')';
-    } else {
-        section.style.display = 'none';
-        quantityLabel.textContent = 'Quantity';
-        quantityHelp.textContent = 'Enter the number of packs/bottles/units in stock.';
-        purchaseLabel.textContent = '';
-        sellingLabel.textContent = '';
-    }
+const COUNTABLE_TYPES=['tablet','capsule','suppository'];
+function isCountable(t){return COUNTABLE_TYPES.includes(t)}
+function toggleUnitsPerPack(){
+    const t=document.getElementById('medicine_type').value;
+    const s=document.getElementById('unitsPerPackSection');
+    const ql=document.getElementById('quantityLabel');
+    const qh=document.getElementById('quantityHelp');
+    const pl=document.getElementById('purchasePriceLabel');
+    const sl=document.getElementById('sellingPriceLabel');
+    if(isCountable(t)){s.style.display='block';ql.textContent='Total Individual Units';qh.innerHTML='<i class="bi bi-info-circle"></i> Total <strong>individual '+t+'s</strong> in stock';pl.textContent='(per '+t+')';sl.textContent='(per '+t+')';}
+    else{s.style.display='none';ql.textContent='Quantity';qh.textContent='Number of packs/bottles in stock';pl.textContent='';sl.textContent='';}
     updateBreakdown();
 }
-
-function updateBreakdown() {
-    const type = document.getElementById('medicine_type').value;
-    const qty = parseInt(document.getElementById('quantity').value) || 0;
-    const unitsPerPack = parseInt(document.getElementById('units_per_pack').value) || 0;
-    const section = document.getElementById('quantityBreakdownSection');
-    const text = document.getElementById('breakdownText');
-
-    if (isCountable(type) && unitsPerPack > 0 && qty > 0) {
-        const strips = Math.floor(qty / unitsPerPack);
-        const loose = qty % unitsPerPack;
-        let msg = `${qty} ${type}s = ${strips} strip${strips !== 1 ? 's' : ''}`;
-        if (loose > 0) msg += ` + ${loose} loose`;
-        text.textContent = msg;
-        section.style.display = 'block';
-    } else {
-        section.style.display = 'none';
-    }
+function updateBreakdown(){
+    const t=document.getElementById('medicine_type').value;
+    const q=parseInt(document.getElementById('quantity').value)||0;
+    const u=parseInt(document.getElementById('units_per_pack').value)||0;
+    const sec=document.getElementById('quantityBreakdownSection');
+    const txt=document.getElementById('breakdownText');
+    if(isCountable(t)&&u>0&&q>0){const st=Math.floor(q/u),lo=q%u;let m=q+' '+t+'s = '+st+' strip'+(st!==1?'s':'');if(lo>0)m+=' + '+lo+' loose';txt.textContent=m;sec.style.display='block';}
+    else{sec.style.display='none';}
 }
-
-document.getElementById('quantity').addEventListener('input', updateBreakdown);
-document.getElementById('units_per_pack').addEventListener('input', updateBreakdown);
-
-// Initialize on load
+document.getElementById('quantity').addEventListener('input',updateBreakdown);
+document.getElementById('units_per_pack').addEventListener('input',updateBreakdown);
 toggleUnitsPerPack();
 </script>
 {% endblock %}

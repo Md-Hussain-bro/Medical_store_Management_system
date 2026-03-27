@@ -1,120 +1,107 @@
 {% extends "base.html" %}
-{% block title %}Expiry Report - PharmaCare{% endblock %}
+{% block title %}Expiry Report - PharmaCare Pro{% endblock %}
 {% block page_title %}Expiry Report{% endblock %}
 
 {% block content %}
-<!-- Stats -->
-<div class="row g-2 g-md-3 mb-3">
+<div class="row g-3 mb-4">
     <div class="col-6">
-        <div class="card bg-danger text-white text-center">
-            <div class="card-body py-2">
-                <h4 class="mb-0">{{ expired|length }}</h4>
-                <small>Expired (₹{{ "%.0f"|format(expired_value) }})</small>
+        <div class="stat-card stat-danger animate-in animate-in-delay-1">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Expired</div>
+                    <div class="stat-card-value">{{ expired|length }}</div>
+                    <div class="stat-card-change down"><i class="bi bi-currency-rupee"></i> {{ "%.0f"|format(expired_value) }} at risk</div>
+                </div>
+                <div class="stat-card-icon"><i class="bi bi-x-circle"></i></div>
             </div>
         </div>
     </div>
     <div class="col-6">
-        <div class="card bg-warning text-dark text-center">
-            <div class="card-body py-2">
-                <h4 class="mb-0">{{ expiring_soon|length }}</h4>
-                <small>Expiring (₹{{ "%.0f"|format(expiring_value) }})</small>
+        <div class="stat-card stat-warning animate-in animate-in-delay-2">
+            <div class="stat-card-body">
+                <div class="stat-card-content">
+                    <div class="stat-card-label">Expiring Soon</div>
+                    <div class="stat-card-value">{{ expiring_soon|length }}</div>
+                    <div class="stat-card-change down"><i class="bi bi-currency-rupee"></i> {{ "%.0f"|format(expiring_value) }} at risk</div>
+                </div>
+                <div class="stat-card-icon"><i class="bi bi-exclamation-triangle"></i></div>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Expired Medicines -->
 {% if expired %}
-<div class="card mb-3">
-    <div class="card-header bg-danger text-white">
-        <h6 class="mb-0"><i class="bi bi-x-circle"></i> Expired Medicines</h6>
+<div class="table-container mb-4 animate-in">
+    <div class="card-header" style="border-left: 3px solid var(--danger);">
+        <div class="card-header-title"><i class="bi bi-x-circle" style="color:var(--danger);"></i> Expired Medicines</div>
+        <span class="badge" style="background:var(--danger-bg);color:var(--danger);">{{ expired|length }}</span>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Medicine</th>
-                        <th class="d-none d-sm-table-cell">Batch</th>
-                        <th class="text-center">Stock</th>
-                        <th class="text-center">Expiry</th>
-                        <th class="text-end d-none d-md-table-cell">Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for m in expired %}
-                    <tr class="table-danger">
-                        <td>
-                            <strong>{{ m.name }}</strong>
-                            <div class="d-sm-none small"><code>{{ m.batch_no }}</code></div>
-                        </td>
-                        <td class="d-none d-sm-table-cell"><code>{{ m.batch_no }}</code></td>
-                        <td class="text-center">{{ m.quantity }}</td>
-                        <td class="text-center">
-                            <span class="badge bg-danger">{{ m.expiry_date.strftime('%d/%m/%Y') }}</span>
-                            <br><small class="text-danger">{{ (import_date - m.expiry_date).days }} days ago</small>
-                        </td>
-                        <td class="text-end d-none d-md-table-cell">
-                            ₹{{ "%.2f"|format(m.quantity * m.purchase_price) }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr><th>Medicine</th><th class="d-none d-sm-table-cell">Batch</th><th class="text-center">Stock</th><th class="text-center">Expired</th><th class="text-end d-none d-md-table-cell">Value</th></tr>
+            </thead>
+            <tbody>
+                {% for m in expired %}
+                <tr class="row-danger">
+                    <td>
+                        <strong style="color:var(--text-primary);">{{ m.name }}</strong>
+                        <div class="d-sm-none"><small><code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;font-size:0.7rem;">{{ m.batch_no }}</code></small></div>
+                    </td>
+                    <td class="d-none d-sm-table-cell"><code style="background:var(--bg-input);padding:2px 6px;border-radius:4px;font-size:0.78rem;">{{ m.batch_no }}</code></td>
+                    <td class="text-center">{{ m.quantity }}</td>
+                    <td class="text-center">
+                        <span class="badge" style="background:var(--danger-bg);color:var(--danger);">{{ m.expiry_date.strftime('%d/%m/%Y') }}</span>
+                        <br><small style="color:var(--danger);font-size:0.72rem;">{{ (import_date - m.expiry_date).days }}d ago</small>
+                    </td>
+                    <td class="text-end d-none d-md-table-cell"><strong>₹{{ "%.2f"|format(m.quantity * m.purchase_price) }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endif %}
 
-<!-- Expiring Soon -->
 {% if expiring_soon %}
-<div class="card">
-    <div class="card-header bg-warning text-dark">
-        <h6 class="mb-0"><i class="bi bi-exclamation-triangle"></i> Expiring Within 30 Days</h6>
+<div class="table-container animate-in">
+    <div class="card-header" style="border-left: 3px solid var(--warning);">
+        <div class="card-header-title"><i class="bi bi-exclamation-triangle" style="color:var(--warning);"></i> Expiring Within 30 Days</div>
+        <span class="badge" style="background:var(--warning-bg);color:var(--warning);">{{ expiring_soon|length }}</span>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>Medicine</th>
-                        <th class="d-none d-sm-table-cell">Batch</th>
-                        <th class="text-center">Stock</th>
-                        <th class="text-center">Expiry</th>
-                        <th class="text-end d-none d-md-table-cell">Value</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for m in expiring_soon %}
-                    <tr class="table-warning">
-                        <td>
-                            <strong>{{ m.name }}</strong>
-                            <div class="d-sm-none small"><code>{{ m.batch_no }}</code></div>
-                        </td>
-                        <td class="d-none d-sm-table-cell"><code>{{ m.batch_no }}</code></td>
-                        <td class="text-center">{{ m.quantity }}</td>
-                        <td class="text-center">
-                            <span class="badge bg-warning text-dark">{{ m.expiry_date.strftime('%d/%m/%Y') }}</span>
-                            <br><small>{{ (m.expiry_date - import_date).days }} days left</small>
-                        </td>
-                        <td class="text-end d-none d-md-table-cell">
-                            ₹{{ "%.2f"|format(m.quantity * m.purchase_price) }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+                <tr><th>Medicine</th><th class="d-none d-sm-table-cell">Batch</th><th class="text-center">Stock</th><th class="text-center">Expiry</th><th class="text-end d-none d-md-table-cell">Value</th></tr>
+            </thead>
+            <tbody>
+                {% for m in expiring_soon %}
+                <tr class="row-warning">
+                    <td>
+                        <strong style="color:var(--text-primary);">{{ m.name }}</strong>
+                        <div class="d-sm-none"><small><code style="background:var(--bg-input);padding:1px 4px;border-radius:3px;font-size:0.7rem;">{{ m.batch_no }}</code></small></div>
+                    </td>
+                    <td class="d-none d-sm-table-cell"><code style="background:var(--bg-input);padding:2px 6px;border-radius:4px;font-size:0.78rem;">{{ m.batch_no }}</code></td>
+                    <td class="text-center">{{ m.quantity }}</td>
+                    <td class="text-center">
+                        <span class="badge" style="background:var(--warning-bg);color:var(--warning);">{{ m.expiry_date.strftime('%d/%m/%Y') }}</span>
+                        <br><small style="color:var(--warning);font-size:0.72rem;">{{ (m.expiry_date - import_date).days }}d left</small>
+                    </td>
+                    <td class="text-end d-none d-md-table-cell"><strong>₹{{ "%.2f"|format(m.quantity * m.purchase_price) }}</strong></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </div>
 </div>
 {% endif %}
 
 {% if not expired and not expiring_soon %}
-<div class="card">
-    <div class="card-body text-center text-muted py-5">
-        <i class="bi bi-check-circle text-success" style="font-size: 3rem;"></i>
-        <h5 class="mt-3">All Clear!</h5>
-        <p>No expired or expiring medicines found.</p>
+<div class="card animate-in">
+    <div class="card-body text-center py-5">
+        <i class="bi bi-check-circle" style="font-size:3rem;color:var(--success);opacity:0.6;"></i>
+        <h5 class="mt-3" style="color:var(--text-primary);">All Clear!</h5>
+        <p style="color:var(--text-muted);">No expired or expiring medicines found.</p>
     </div>
 </div>
 {% endif %}

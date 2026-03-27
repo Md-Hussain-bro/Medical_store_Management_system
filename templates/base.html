@@ -1,33 +1,1129 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <meta name="theme-color" content="#0f172a">
-    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='logo.ico') }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <title>{% block title %}PharmaCare Pro{% endblock %}</title>
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link href="{{ url_for('static', filename='style.css') }}" rel="stylesheet">
+
+    <!-- Custom Dashboard CSS (inline for single-file delivery) -->
+    <style>
+    /* ================================================================
+       PHARMACARE PRO — PREMIUM DASHBOARD DESIGN SYSTEM
+       Version 2.0 — Production Grade
+       ================================================================ */
+
+    /* ── CSS Custom Properties ── */
+    :root {
+        /* Sidebar */
+        --sidebar-w: 272px;
+        --sidebar-bg: linear-gradient(180deg, #0c1222 0%, #111827 50%, #0f172a 100%);
+        --sidebar-border: rgba(255,255,255,0.04);
+        --sidebar-text: rgba(255,255,255,0.55);
+        --sidebar-text-hover: rgba(255,255,255,0.95);
+        --sidebar-icon: rgba(255,255,255,0.35);
+        --sidebar-hover-bg: rgba(255,255,255,0.05);
+        --sidebar-active-bg: rgba(99,102,241,0.12);
+
+        /* Brand */
+        --primary: #6366f1;
+        --primary-light: #818cf8;
+        --primary-dark: #4f46e5;
+        --primary-glow: rgba(99,102,241,0.35);
+        --primary-subtle: rgba(99,102,241,0.08);
+
+        /* Semantic */
+        --success: #10b981;
+        --success-subtle: rgba(16,185,129,0.08);
+        --warning: #f59e0b;
+        --warning-subtle: rgba(245,158,11,0.08);
+        --danger: #ef4444;
+        --danger-subtle: rgba(239,68,68,0.08);
+        --info: #06b6d4;
+        --info-subtle: rgba(6,182,212,0.08);
+
+        /* Surfaces */
+        --surface-bg: #f8fafc;
+        --surface-card: #ffffff;
+        --surface-elevated: #ffffff;
+        --surface-input: #f1f5f9;
+        --surface-hover: #f8fafc;
+
+        /* Text */
+        --text-primary: #0f172a;
+        --text-secondary: #475569;
+        --text-muted: #94a3b8;
+        --text-light: #cbd5e1;
+        --text-inverse: #ffffff;
+
+        /* Borders */
+        --border: #e2e8f0;
+        --border-light: #f1f5f9;
+        --border-focus: var(--primary);
+
+        /* Shadows */
+        --shadow-xs: 0 1px 2px rgba(0,0,0,0.03);
+        --shadow-sm: 0 1px 3px rgba(0,0,0,0.04), 0 1px 2px rgba(0,0,0,0.06);
+        --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.04);
+        --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.06), 0 4px 6px -4px rgba(0,0,0,0.03);
+        --shadow-xl: 0 20px 25px -5px rgba(0,0,0,0.07), 0 8px 10px -6px rgba(0,0,0,0.03);
+        --shadow-glow: 0 0 20px var(--primary-glow);
+
+        /* Layout */
+        --topbar-h: 64px;
+        --pad: 24px;
+        --radius: 12px;
+        --radius-sm: 8px;
+        --radius-lg: 16px;
+        --radius-xl: 20px;
+
+        /* Motion */
+        --ease: cubic-bezier(0.4, 0, 0.2, 1);
+        --duration-fast: 150ms;
+        --duration: 250ms;
+        --duration-slow: 350ms;
+    }
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+        -webkit-text-size-adjust: 100%;
+        scroll-behavior: smooth;
+        overflow-x: hidden;
+    }
+
+    body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+        background: var(--surface-bg);
+        color: var(--text-primary);
+        line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+    }
+
+    body.sidebar-open { overflow: hidden; }
+
+    ::selection { background: var(--primary); color: white; }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--text-light); border-radius: 10px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+    /* ================================================================
+       SIDEBAR
+       ================================================================ */
+    .wrapper {
+        display: flex;
+        min-height: 100vh;
+        position: relative;
+        max-width: 100vw;
+        overflow-x: hidden;
+    }
+
+    /* Overlay */
+    .sidebar-overlay {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15,23,42,0.65);
+        backdrop-filter: blur(6px);
+        -webkit-backdrop-filter: blur(6px);
+        z-index: 998;
+        opacity: 0;
+        transition: opacity var(--duration) var(--ease);
+    }
+    .sidebar-overlay.active { display: block; opacity: 1; }
+
+    /* Sidebar Container */
+    .sidebar {
+        width: var(--sidebar-w);
+        min-height: 100vh;
+        background: var(--sidebar-bg);
+        position: fixed;
+        top: 0; left: 0;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        transition: transform var(--duration-slow) var(--ease);
+        overflow-y: auto;
+        overflow-x: hidden;
+        -webkit-overflow-scrolling: touch;
+        border-right: 1px solid var(--sidebar-border);
+    }
+
+    .sidebar::-webkit-scrollbar { width: 3px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+
+    /* ── Sidebar Header ── */
+    .sidebar-header {
+        padding: 20px 20px 18px;
+        position: relative;
+        flex-shrink: 0;
+        border-bottom: 1px solid var(--sidebar-border);
+    }
+
+    .sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-decoration: none;
+        color: white;
+    }
+
+    .sidebar-brand:hover { color: white; }
+
+    .sidebar-brand-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+        border-radius: 11px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.15rem;
+        color: white;
+        flex-shrink: 0;
+        box-shadow: 0 4px 15px var(--primary-glow);
+        transition: transform var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
+    }
+
+    .sidebar-brand:hover .sidebar-brand-icon {
+        transform: scale(1.05);
+        box-shadow: 0 6px 20px var(--primary-glow);
+    }
+
+    .sidebar-brand-text { display: flex; flex-direction: column; }
+
+    .sidebar-brand-name {
+        font-size: 1.15rem;
+        font-weight: 800;
+        color: white;
+        line-height: 1.2;
+        letter-spacing: -0.03em;
+    }
+
+    .sidebar-brand-sub {
+        font-size: 0.62rem;
+        color: var(--sidebar-text);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 600;
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 160px;
+    }
+
+    /* Close btn (mobile) */
+    .sidebar-close-btn {
+        position: absolute;
+        top: 18px; right: 14px;
+        background: rgba(255,255,255,0.05);
+        border: 1px solid rgba(255,255,255,0.08);
+        color: var(--sidebar-text);
+        font-size: 1rem;
+        cursor: pointer;
+        padding: 4px 8px;
+        border-radius: 8px;
+        line-height: 1;
+        transition: all var(--duration-fast) var(--ease);
+    }
+    .sidebar-close-btn:hover {
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border-color: rgba(255,255,255,0.15);
+    }
+
+    /* ── Sidebar Navigation ── */
+    .sidebar-nav {
+        flex: 1;
+        min-height: 0;
+        padding: 12px 12px 20px;
+        overflow-y: auto;
+    }
+
+    .sidebar-nav-section { margin-bottom: 6px; }
+
+    .sidebar-nav-label {
+        display: block;
+        padding: 18px 12px 7px;
+        font-size: 0.6rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        color: rgba(255,255,255,0.2);
+    }
+
+    .sidebar-nav-item { list-style: none; margin-bottom: 2px; }
+
+    .sidebar-nav-link {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 14px;
+        border-radius: var(--radius-sm);
+        color: var(--sidebar-text);
+        text-decoration: none;
+        font-size: 0.855rem;
+        font-weight: 500;
+        transition: all var(--duration-fast) var(--ease);
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Accent bar */
+    .sidebar-nav-link::before {
+        content: '';
+        position: absolute;
+        left: 0; top: 50%;
+        transform: translateY(-50%) scaleY(0);
+        width: 3px; height: 55%;
+        background: var(--primary);
+        border-radius: 0 4px 4px 0;
+        transition: transform var(--duration) var(--ease);
+    }
+
+    .sidebar-nav-link:hover {
+        background: var(--sidebar-hover-bg);
+        color: var(--sidebar-text-hover);
+    }
+
+    .sidebar-nav-link:hover .sidebar-nav-icon {
+        color: var(--primary-light);
+        transform: scale(1.1);
+    }
+
+    .sidebar-nav-link.active {
+        background: var(--sidebar-active-bg);
+        color: white;
+        font-weight: 600;
+    }
+
+    .sidebar-nav-link.active::before {
+        transform: translateY(-50%) scaleY(1);
+    }
+
+    .sidebar-nav-link.active .sidebar-nav-icon {
+        color: var(--primary-light);
+    }
+
+    .sidebar-nav-icon {
+        font-size: 1.12rem;
+        width: 22px;
+        text-align: center;
+        flex-shrink: 0;
+        color: var(--sidebar-icon);
+        transition: color var(--duration-fast) var(--ease), transform var(--duration-fast) var(--ease);
+    }
+
+    .sidebar-nav-badge {
+        margin-left: auto;
+        padding: 2px 8px;
+        border-radius: 10px;
+        font-size: 0.6rem;
+        font-weight: 700;
+        background: var(--danger);
+        color: white;
+        line-height: 1.4;
+    }
+
+    /* ── Sidebar Footer ── */
+    .sidebar-footer {
+        padding: 14px 16px;
+        border-top: 1px solid var(--sidebar-border);
+        flex-shrink: 0;
+        background: rgba(0,0,0,0.2);
+    }
+
+    .sidebar-user {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: var(--radius-sm);
+        transition: background var(--duration-fast) var(--ease);
+    }
+
+    .sidebar-user:hover { background: rgba(255,255,255,0.04); }
+
+    .sidebar-avatar {
+        width: 38px; height: 38px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 0.85rem;
+        flex-shrink: 0;
+        color: white;
+        text-transform: uppercase;
+        position: relative;
+    }
+
+    /* Online indicator */
+    .sidebar-avatar::after {
+        content: '';
+        position: absolute;
+        bottom: -1px; right: -1px;
+        width: 10px; height: 10px;
+        background: var(--success);
+        border: 2px solid #0c1222;
+        border-radius: 50%;
+    }
+
+    .sidebar-avatar.admin { background: linear-gradient(135deg, #ef4444, #dc2626); }
+    .sidebar-avatar.owner { background: linear-gradient(135deg, var(--primary), var(--primary-dark)); }
+    .sidebar-avatar.staff { background: linear-gradient(135deg, var(--info), #0891b2); }
+
+    .sidebar-user-info { flex: 1; min-width: 0; }
+
+    .sidebar-user-name {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: white;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .sidebar-user-role {
+        font-size: 0.62rem;
+        color: var(--sidebar-text);
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        font-weight: 600;
+    }
+
+    .sidebar-logout-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        width: 100%;
+        margin-top: 10px;
+        padding: 9px;
+        border: 1px solid rgba(255,255,255,0.06);
+        border-radius: var(--radius-sm);
+        background: rgba(255,255,255,0.03);
+        color: var(--sidebar-text);
+        font-size: 0.78rem;
+        font-weight: 600;
+        cursor: pointer;
+        text-decoration: none;
+        transition: all var(--duration-fast) var(--ease);
+    }
+
+    .sidebar-logout-btn:hover {
+        background: rgba(239,68,68,0.1);
+        border-color: rgba(239,68,68,0.25);
+        color: #fca5a5;
+    }
+
+    /* ================================================================
+       MAIN CONTENT
+       ================================================================ */
+    .hamburger-btn {
+        display: none;
+        align-items: center;
+        justify-content: center;
+        width: 42px; height: 42px;
+        background: var(--surface-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        color: var(--text-secondary);
+        font-size: 1.3rem;
+        transition: all var(--duration-fast) var(--ease);
+        flex-shrink: 0;
+    }
+
+    .hamburger-btn:hover {
+        background: var(--surface-input);
+        border-color: var(--primary);
+        color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-subtle);
+    }
+
+    .main-content {
+        flex: 1;
+        min-height: 100vh;
+        max-width: 100%;
+        overflow-x: hidden;
+        transition: margin-left var(--duration-slow) var(--ease);
+    }
+
+    /* ── Top Navbar ── */
+    .top-navbar {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: rgba(255,255,255,0.82);
+        backdrop-filter: blur(16px) saturate(180%);
+        -webkit-backdrop-filter: blur(16px) saturate(180%);
+        border-bottom: 1px solid var(--border);
+        padding: 0 var(--pad);
+        height: var(--topbar-h);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .topbar-left {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 0;
+    }
+
+    .page-title-group { min-width: 0; }
+
+    .page-title {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        letter-spacing: -0.02em;
+        line-height: 1.3;
+        margin: 0;
+    }
+
+    .page-subtitle {
+        font-size: 0.72rem;
+        color: var(--text-muted);
+        font-weight: 500;
+        margin: 0;
+    }
+
+    .topbar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        flex-shrink: 0;
+    }
+
+    .topbar-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 14px;
+        background: var(--surface-input);
+        border: 1px solid var(--border-light);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-secondary);
+        transition: all var(--duration-fast) var(--ease);
+    }
+
+    .topbar-pill:hover {
+        background: var(--surface-card);
+        border-color: var(--border);
+    }
+
+    .topbar-pill i {
+        font-size: 0.85rem;
+        color: var(--text-muted);
+    }
+
+    /* ── Content Area ── */
+    .content-area {
+        padding: var(--pad);
+        max-width: 1600px;
+        overflow-x: hidden;
+    }
+
+    /* ================================================================
+       REUSABLE COMPONENTS
+       ================================================================ */
+
+    /* ── Cards ── */
+    .card {
+        background: var(--surface-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 20px;
+        transition: box-shadow var(--duration) var(--ease), transform var(--duration) var(--ease);
+        overflow: hidden;
+        animation: fadeSlideUp 0.4s var(--ease) both;
+    }
+
+    .card:hover { box-shadow: var(--shadow-md); }
+
+    .card-header {
+        background: transparent;
+        border-bottom: 1px solid var(--border-light);
+        padding: 16px 20px;
+        font-weight: 600;
+        font-size: 0.88rem;
+        color: var(--text-primary);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+    }
+
+    .card-header-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 700;
+        font-size: 0.88rem;
+    }
+
+    .card-header-title i { color: var(--text-muted); font-size: 1rem; }
+
+    .card-body { padding: 20px; }
+
+    /* ── Stat Cards ── */
+    .stat-card {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        background: var(--surface-card);
+        box-shadow: var(--shadow-sm);
+        transition: all var(--duration) var(--ease);
+        overflow: hidden;
+        position: relative;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; right: 0;
+        height: 3px;
+    }
+
+    .stat-card.stat-primary::before { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
+    .stat-card.stat-success::before { background: linear-gradient(90deg, var(--success), #34d399); }
+    .stat-card.stat-warning::before { background: linear-gradient(90deg, var(--warning), #fbbf24); }
+    .stat-card.stat-danger::before { background: linear-gradient(90deg, var(--danger), #f87171); }
+    .stat-card.stat-info::before { background: linear-gradient(90deg, var(--info), #22d3ee); }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .stat-card-body {
+        padding: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .stat-card-content { flex: 1; }
+
+    .stat-card-label {
+        font-size: 0.72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        margin-bottom: 6px;
+    }
+
+    .stat-card-value {
+        font-size: 1.75rem;
+        font-weight: 800;
+        color: var(--text-primary);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+        word-break: break-word;
+    }
+
+    .stat-card-change {
+        display: inline-flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 0.68rem;
+        font-weight: 600;
+        padding: 2px 7px;
+        border-radius: 5px;
+        margin-top: 6px;
+    }
+
+    .stat-card-change.up { background: var(--success-subtle); color: var(--success); }
+    .stat-card-change.down { background: var(--danger-subtle); color: var(--danger); }
+
+    .stat-card-icon {
+        width: 48px; height: 48px;
+        border-radius: var(--radius-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.3rem;
+        flex-shrink: 0;
+    }
+
+    .stat-card.stat-primary .stat-card-icon { background: var(--primary-subtle); color: var(--primary); }
+    .stat-card.stat-success .stat-card-icon { background: var(--success-subtle); color: var(--success); }
+    .stat-card.stat-warning .stat-card-icon { background: var(--warning-subtle); color: var(--warning); }
+    .stat-card.stat-danger .stat-card-icon { background: var(--danger-subtle); color: var(--danger); }
+    .stat-card.stat-info .stat-card-icon { background: var(--info-subtle); color: var(--info); }
+
+    /* ── Table Container ── */
+    .table-container {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        overflow: hidden;
+        background: var(--surface-card);
+        box-shadow: var(--shadow-sm);
+        margin-bottom: 20px;
+        animation: fadeSlideUp 0.4s var(--ease) both;
+    }
+
+    .table-responsive {
+        max-width: 100%;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .table { margin-bottom: 0; font-size: 0.84rem; }
+
+    .table thead th {
+        background: var(--surface-input);
+        border-bottom: 1px solid var(--border);
+        font-weight: 700;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        color: var(--text-muted);
+        padding: 12px 16px;
+        white-space: nowrap;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+
+    .table tbody td {
+        padding: 12px 16px;
+        vertical-align: middle;
+        border-bottom: 1px solid var(--border-light);
+        color: var(--text-secondary);
+        transition: background var(--duration-fast) var(--ease);
+    }
+
+    .table tbody tr:hover td { background: rgba(99,102,241,0.015); }
+    .table tbody tr:last-child td { border-bottom: none; }
+    .table tbody tr.row-danger td { background: rgba(239,68,68,0.03); }
+    .table tbody tr.row-warning td { background: rgba(245,158,11,0.03); }
+    .table tbody tr.row-danger:hover td { background: rgba(239,68,68,0.06); }
+    .table tbody tr.row-warning:hover td { background: rgba(245,158,11,0.06); }
+
+    /* ── Badges ── */
+    .badge {
+        font-weight: 600;
+        font-size: 0.68rem;
+        padding: 4px 10px;
+        border-radius: 6px;
+        letter-spacing: 0.02em;
+    }
+
+    .badge-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 4px 10px;
+        border-radius: 20px;
+        font-size: 0.68rem;
+        font-weight: 600;
+    }
+
+    .badge-status::before {
+        content: '';
+        width: 6px; height: 6px;
+        border-radius: 50%;
+        flex-shrink: 0;
+    }
+
+    .badge-status.active { background: var(--success-subtle); color: var(--success); }
+    .badge-status.active::before { background: var(--success); }
+    .badge-status.inactive { background: var(--danger-subtle); color: var(--danger); }
+    .badge-status.inactive::before { background: var(--danger); }
+    .badge-status.expiring { background: var(--warning-subtle); color: var(--warning); }
+    .badge-status.expiring::before { background: var(--warning); }
+
+    /* ── Forms ── */
+    .form-control, .form-select {
+        border: 1px solid var(--border);
+        border-radius: var(--radius-sm);
+        padding: 10px 14px;
+        font-size: 0.88rem;
+        color: var(--text-primary);
+        background: var(--surface-card);
+        transition: all var(--duration-fast) var(--ease);
+        font-family: inherit;
+    }
+
+    .form-control:focus, .form-select:focus {
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px var(--primary-subtle);
+        outline: none;
+    }
+
+    .form-control::placeholder { color: var(--text-light); }
+
+    .form-label {
+        font-size: 0.82rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 6px;
+    }
+
+    .form-text { font-size: 0.73rem; color: var(--text-muted); margin-top: 4px; }
+
+    .search-box { position: relative; }
+    .search-box .form-control { padding-left: 40px; background: var(--surface-input); border-color: transparent; }
+    .search-box .form-control:focus { background: var(--surface-card); border-color: var(--primary); }
+    .search-box .search-icon {
+        position: absolute; left: 14px; top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 0.88rem;
+        z-index: 1;
+        pointer-events: none;
+    }
+
+    /* ── Buttons ── */
+    .btn {
+        border-radius: var(--radius-sm);
+        padding: 9px 18px;
+        font-weight: 600;
+        font-size: 0.84rem;
+        transition: all var(--duration-fast) var(--ease);
+        font-family: inherit;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        cursor: pointer;
+        border: 1px solid transparent;
+        text-decoration: none;
+        line-height: 1.5;
+    }
+
+    .btn:active { transform: scale(0.97); }
+
+    .btn-primary { background: var(--primary); color: white; border-color: var(--primary); }
+    .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); box-shadow: var(--shadow-glow); color: white; }
+
+    .btn-success { background: var(--success); color: white; }
+    .btn-success:hover { background: #059669; box-shadow: 0 4px 12px rgba(16,185,129,0.3); color: white; }
+
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #dc2626; box-shadow: 0 4px 12px rgba(239,68,68,0.3); color: white; }
+
+    .btn-outline-primary { background: transparent; color: var(--primary); border-color: var(--border); }
+    .btn-outline-primary:hover { background: var(--primary-subtle); border-color: var(--primary); color: var(--primary); }
+
+    .btn-outline-danger { background: transparent; color: var(--danger); border-color: var(--border); }
+    .btn-outline-danger:hover { background: var(--danger-subtle); border-color: var(--danger); color: var(--danger); }
+
+    .btn-outline-secondary { background: transparent; color: var(--text-secondary); border-color: var(--border); }
+    .btn-outline-secondary:hover { background: var(--surface-input); color: var(--text-primary); }
+
+    .btn-sm { padding: 5px 10px; font-size: 0.76rem; border-radius: 6px; }
+    .btn-lg { padding: 12px 24px; font-size: 0.92rem; }
+
+    .btn-icon {
+        width: 36px; height: 36px; padding: 0;
+        display: inline-flex; align-items: center; justify-content: center;
+    }
+    .btn-icon.btn-sm { width: 30px; height: 30px; }
+
+    /* ── Alerts ── */
+    .alert {
+        border: none;
+        border-radius: var(--radius-sm);
+        padding: 12px 16px;
+        font-size: 0.84rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .alert-success { background: var(--success-subtle); color: #065f46; border-left: 3px solid var(--success); }
+    .alert-danger { background: var(--danger-subtle); color: #991b1b; border-left: 3px solid var(--danger); }
+    .alert-warning { background: var(--warning-subtle); color: #92400e; border-left: 3px solid var(--warning); }
+    .alert-info { background: var(--info-subtle); color: #155e75; border-left: 3px solid var(--info); }
+
+    /* ── Report Cards ── */
+    .report-card {
+        cursor: pointer;
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        transition: all var(--duration) var(--ease);
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .report-card:hover {
+        border-color: var(--primary);
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-3px);
+    }
+
+    .report-icon {
+        width: 56px; height: 56px;
+        border-radius: var(--radius);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+    }
+
+    /* ── Modal ── */
+    .modal-content {
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        box-shadow: var(--shadow-xl);
+    }
+    .modal-header { border-bottom: 1px solid var(--border-light); padding: 16px 20px; }
+    .modal-body { padding: 20px; }
+    .modal-footer { border-top: 1px solid var(--border-light); padding: 12px 20px; }
+    .modal-dialog { margin: 12px; }
+
+    /* ================================================================
+       LOGIN PAGE
+       ================================================================ */
+    .login-body {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        padding: 20px;
+
+        /* Premium gradient */
+        background:
+            radial-gradient(ellipse at 20% 50%, rgba(99,102,241,0.15) 0%, transparent 50%),
+            radial-gradient(ellipse at 80% 20%, rgba(6,182,212,0.1) 0%, transparent 50%),
+            radial-gradient(ellipse at 50% 100%, rgba(16,185,129,0.08) 0%, transparent 50%),
+            linear-gradient(180deg, #0c1222 0%, #111827 40%, #1e293b 100%);
+    }
+
+    /* Floating grid pattern */
+    .login-body::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+        background-size: 60px 60px;
+        pointer-events: none;
+    }
+
+    .login-card {
+        background: rgba(255,255,255,0.97);
+        backdrop-filter: blur(20px);
+        border: 1px solid rgba(255,255,255,0.15);
+        border-radius: var(--radius-xl);
+        padding: 40px 32px;
+        width: 100%;
+        max-width: 420px;
+        box-shadow:
+            var(--shadow-xl),
+            0 0 60px rgba(99,102,241,0.08);
+        position: relative;
+        z-index: 1;
+    }
+
+    .login-header { text-align: center; margin-bottom: 32px; }
+
+    .login-header-icon {
+        width: 60px; height: 60px;
+        background: linear-gradient(135deg, var(--primary), var(--primary-light));
+        border-radius: 16px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        color: white;
+        margin-bottom: 18px;
+        box-shadow: 0 8px 30px var(--primary-glow);
+    }
+
+    .login-header h2 {
+        color: var(--text-primary);
+        margin: 0 0 4px;
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: -0.03em;
+    }
+
+    .login-header p {
+        color: var(--text-muted);
+        font-size: 0.85rem;
+        margin: 0;
+    }
+
+    .login-footer {
+        margin-top: 24px;
+        text-align: center;
+        padding-top: 16px;
+        border-top: 1px solid var(--border-light);
+    }
+
+    /* ================================================================
+       ANIMATIONS
+       ================================================================ */
+    @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate-in { animation: fadeSlideUp 0.4s var(--ease) both; }
+    .animate-in-delay-1 { animation-delay: 0.05s; }
+    .animate-in-delay-2 { animation-delay: 0.1s; }
+    .animate-in-delay-3 { animation-delay: 0.15s; }
+    .animate-in-delay-4 { animation-delay: 0.2s; }
+
+    /* ================================================================
+       RESPONSIVE
+       ================================================================ */
+
+    /* Mobile */
+    @media (max-width: 575.98px) {
+        :root { --pad: 12px; --topbar-h: 56px; }
+        .sidebar { transform: translateX(-100%); width: 280px; }
+        .sidebar.open { transform: translateX(0); }
+        .main-content { margin-left: 0; width: 100%; }
+        .hamburger-btn { display: flex; }
+        .page-title { font-size: 1rem; max-width: 160px; }
+        .stat-card-value { font-size: 1.3rem; }
+        .stat-card-icon { width: 40px; height: 40px; font-size: 1rem; }
+        .stat-card-body { padding: 14px; }
+        .card-body { padding: 14px; }
+        .card-header { padding: 12px 14px; }
+        .table thead th, .table tbody td { padding: 8px 10px; font-size: 0.76rem; }
+        .form-control, .form-select { font-size: 16px !important; }
+        .login-card { padding: 28px 20px; border-radius: var(--radius-lg); }
+        .login-header-icon { width: 50px; height: 50px; font-size: 1.3rem; border-radius: 14px; }
+        .login-header h2 { font-size: 1.35rem; }
+        .modal-dialog { margin: 8px; }
+        .btn { min-height: 44px; }
+        .btn-sm { min-height: 36px; }
+        .sidebar-nav-link { min-height: 44px; padding: 12px 14px; }
+    }
+
+    /* Tablet */
+    @media (min-width: 576px) and (max-width: 991.98px) {
+        :root { --pad: 16px; }
+        .sidebar { transform: translateX(-100%); width: 280px; }
+        .sidebar.open { transform: translateX(0); }
+        .main-content { margin-left: 0; width: 100%; }
+        .hamburger-btn { display: flex; }
+        .page-title { font-size: 1.1rem; max-width: 300px; }
+    }
+
+    /* Desktop */
+    @media (min-width: 992px) {
+        .sidebar { transform: translateX(0); }
+        .main-content { margin-left: var(--sidebar-w); }
+        .hamburger-btn { display: none !important; }
+        .sidebar-close-btn { display: none !important; }
+        .sidebar-overlay { display: none !important; }
+        .page-title { max-width: none; }
+    }
+
+    /* Very small phones */
+    @media (max-width: 359.98px) {
+        :root { --pad: 8px; }
+        .sidebar { width: 260px; }
+        .page-title { font-size: 0.9rem; max-width: 120px; }
+        .stat-card-value { font-size: 1.15rem; }
+        .stat-card-body { padding: 10px; }
+    }
+
+    /* Landscape phone */
+    @media (max-height: 500px) and (max-width: 991.98px) {
+        .sidebar-header { padding: 12px 16px; }
+        .sidebar-nav-link { padding: 8px 12px; min-height: 38px; }
+        .sidebar-footer { padding: 10px 12px; }
+        .top-navbar { height: 48px; }
+    }
+
+    /* Safe area (notch devices) */
+    @supports (padding: env(safe-area-inset-bottom)) {
+        .sidebar-footer { padding-bottom: calc(14px + env(safe-area-inset-bottom)); }
+        .content-area {
+            padding-left: calc(var(--pad) + env(safe-area-inset-left));
+            padding-right: calc(var(--pad) + env(safe-area-inset-right));
+        }
+    }
+
+    /* iOS zoom prevention */
+    @media screen and (max-width: 767px) {
+        input, select, textarea { font-size: 16px !important; }
+    }
+
+    /* Accessibility */
+    .btn:focus-visible, .form-control:focus-visible, .sidebar-nav-link:focus-visible {
+        outline: 2px solid var(--primary);
+        outline-offset: 2px;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *, *::before, *::after {
+            animation-duration: 0.01ms !important;
+            transition-duration: 0.01ms !important;
+        }
+        .stat-card:hover, .report-card:hover { transform: none; }
+    }
+
+    /* Print */
+    @media print {
+        .sidebar, .sidebar-overlay, .hamburger-btn, .top-navbar, .btn, .alert { display: none !important; }
+        .main-content { margin-left: 0 !important; width: 100% !important; }
+        .card { box-shadow: none !important; border: 1px solid #ddd !important; break-inside: avoid; }
+        body { background: white !important; }
+        .content-area { padding: 0 !important; }
+    }
+    </style>
 
     {% block extra_css %}{% endblock %}
 </head>
 <body>
 
 {% if current_user.is_authenticated %}
-{# ═══════════ AUTHENTICATED LAYOUT ═══════════ #}
+{# ═══════════════════════════════════════════════════════
+   AUTHENTICATED LAYOUT
+   ═══════════════════════════════════════════════════════ #}
 <div class="wrapper">
 
-    <!-- Sidebar Overlay -->
+    <!-- Overlay -->
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
     <!-- ═══ SIDEBAR ═══ -->
     <nav class="sidebar" id="sidebar">
-        <!-- Brand -->
+
+        <!-- Brand Header -->
         <div class="sidebar-header">
             <a href="{{ url_for('index') }}" class="sidebar-brand">
                 <div class="sidebar-brand-icon">
@@ -46,7 +1142,7 @@
                     </span>
                 </div>
             </a>
-            <button class="sidebar-close-btn d-lg-none" onclick="closeSidebar()" aria-label="Close">
+            <button class="sidebar-close-btn d-lg-none" onclick="closeSidebar()" aria-label="Close sidebar">
                 <i class="bi bi-x-lg"></i>
             </button>
         </div>
@@ -54,137 +1150,132 @@
         <!-- Navigation -->
         <div class="sidebar-nav">
             {% if current_user.is_superadmin %}
-                {# ── Superadmin Nav ── #}
-                <div class="sidebar-nav-section">
-                    <span class="sidebar-nav-label">Administration</span>
-                    <ul style="list-style:none; padding:0; margin:0;">
-                        <li class="sidebar-nav-item">
-                            <a href="{{ url_for('admin_dashboard') }}"
-                               class="sidebar-nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
-                               onclick="closeSidebar()">
-                                <i class="bi bi-grid-1x2-fill sidebar-nav-icon"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="sidebar-nav-item">
-                            <a href="{{ url_for('admin_stores') }}"
-                               class="sidebar-nav-link {% if request.endpoint in ['admin_stores', 'admin_add_store', 'admin_store_users'] %}active{% endif %}"
-                               onclick="closeSidebar()">
-                                <i class="bi bi-shop sidebar-nav-icon"></i>
-                                Stores
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-            {% else %}
-                {# ── Store User Nav ── #}
-                <div class="sidebar-nav-section">
-                    <span class="sidebar-nav-label">Main Menu</span>
-                    <ul style="list-style:none; padding:0; margin:0;">
-                        <li class="sidebar-nav-item">
-                            <a href="{{ url_for('dashboard') }}"
-                               class="sidebar-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
-                               onclick="closeSidebar()">
-                                <i class="bi bi-grid-1x2-fill sidebar-nav-icon"></i>
-                                Dashboard
-                            </a>
-                        </li>
-                        <li class="sidebar-nav-item">
-                            <a href="{{ url_for('inventory') }}"
-                               class="sidebar-nav-link {% if request.endpoint in ['inventory', 'add_medicine', 'edit_medicine'] %}active{% endif %}"
-                               onclick="closeSidebar()">
-                                <i class="bi bi-capsule sidebar-nav-icon"></i>
-                                Inventory
-                            </a>
-                        </li>
-                        <li class="sidebar-nav-item">
-                            <a href="{{ url_for('sales') }}"
-                               class="sidebar-nav-link {% if request.endpoint in ['sales', 'view_bill'] %}active{% endif %}"
-                               onclick="closeSidebar()">
-                                <i class="bi bi-cart3 sidebar-nav-icon"></i>
-                                Point of Sale
-                            </a>
-                        </li>
-                        <li class="sidebar-nav-item">
-                            <a href="{{ url_for('reports') }}"
-                               class="sidebar-nav-link {% if request.endpoint in ['reports', 'daily_report', 'date_range_report', 'stock_report', 'expiry_report'] %}active{% endif %}"
-                               onclick="closeSidebar()">
-                                <i class="bi bi-bar-chart-line sidebar-nav-icon"></i>
-                                Reports
-                            </a>
-                        </li>
-                    </ul>
-                </div>
+            {# ── Superadmin ── #}
+            <div class="sidebar-nav-section">
+                <span class="sidebar-nav-label">Administration</span>
+                <ul style="list-style:none;padding:0;margin:0;">
+                    <li class="sidebar-nav-item">
+                        <a href="{{ url_for('admin_dashboard') }}"
+                           class="sidebar-nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}"
+                           onclick="closeSidebar()">
+                            <i class="bi bi-grid-1x2-fill sidebar-nav-icon"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="{{ url_for('admin_stores') }}"
+                           class="sidebar-nav-link {% if request.endpoint in ['admin_stores','admin_add_store','admin_store_users'] %}active{% endif %}"
+                           onclick="closeSidebar()">
+                            <i class="bi bi-shop sidebar-nav-icon"></i>
+                            Stores
+                        </a>
+                    </li>
+                </ul>
+            </div>
 
-                {% if current_user.is_owner %}
-                <div class="sidebar-nav-section">
-                    <span class="sidebar-nav-label">Management</span>
-                    <ul style="list-style:none; padding:0; margin:0;">
-                        <li class="sidebar-nav-item">
-                            <a href="{{ url_for('manage_users') }}"
-                               class="sidebar-nav-link {% if request.endpoint in ['manage_users', 'add_user'] %}active{% endif %}"
-                               onclick="closeSidebar()">
-                                <i class="bi bi-people sidebar-nav-icon"></i>
-                                Staff Management
-                            </a>
-                        </li>
-                    </ul>
-                </div>
-                {% endif %}
+            {% else %}
+            {# ── Store User ── #}
+            <div class="sidebar-nav-section">
+                <span class="sidebar-nav-label">Main Menu</span>
+                <ul style="list-style:none;padding:0;margin:0;">
+                    <li class="sidebar-nav-item">
+                        <a href="{{ url_for('dashboard') }}"
+                           class="sidebar-nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}"
+                           onclick="closeSidebar()">
+                            <i class="bi bi-grid-1x2-fill sidebar-nav-icon"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="{{ url_for('inventory') }}"
+                           class="sidebar-nav-link {% if request.endpoint in ['inventory','add_medicine','edit_medicine'] %}active{% endif %}"
+                           onclick="closeSidebar()">
+                            <i class="bi bi-capsule sidebar-nav-icon"></i>
+                            Inventory
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="{{ url_for('sales') }}"
+                           class="sidebar-nav-link {% if request.endpoint in ['sales','view_bill'] %}active{% endif %}"
+                           onclick="closeSidebar()">
+                            <i class="bi bi-cart3 sidebar-nav-icon"></i>
+                            Point of Sale
+                        </a>
+                    </li>
+                    <li class="sidebar-nav-item">
+                        <a href="{{ url_for('reports') }}"
+                           class="sidebar-nav-link {% if request.endpoint in ['reports','daily_report','date_range_report','stock_report','expiry_report'] %}active{% endif %}"
+                           onclick="closeSidebar()">
+                            <i class="bi bi-bar-chart-line sidebar-nav-icon"></i>
+                            Reports
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            {% if current_user.is_owner %}
+            <div class="sidebar-nav-section">
+                <span class="sidebar-nav-label">Management</span>
+                <ul style="list-style:none;padding:0;margin:0;">
+                    <li class="sidebar-nav-item">
+                        <a href="{{ url_for('manage_users') }}"
+                           class="sidebar-nav-link {% if request.endpoint in ['manage_users','add_user'] %}active{% endif %}"
+                           onclick="closeSidebar()">
+                            <i class="bi bi-people sidebar-nav-icon"></i>
+                            Staff
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            {% endif %}
             {% endif %}
         </div>
 
-        <!-- Sidebar Footer -->
+        <!-- Footer -->
         <div class="sidebar-footer">
             <div class="sidebar-user">
                 <div class="sidebar-avatar {{ 'admin' if current_user.is_superadmin else ('owner' if current_user.is_owner else 'staff') }}">
                     {{ (current_user.full_name or current_user.username)[0]|upper }}
                 </div>
                 <div class="sidebar-user-info">
-                    <div class="sidebar-user-name">
-                        {{ current_user.full_name or current_user.username }}
-                    </div>
-                    <div class="sidebar-user-role">
-                        {{ current_user.role|title }}
-                    </div>
+                    <div class="sidebar-user-name">{{ current_user.full_name or current_user.username }}</div>
+                    <div class="sidebar-user-role">{{ current_user.role|title }}</div>
                 </div>
             </div>
             <a href="{{ url_for('logout') }}" class="sidebar-logout-btn">
-                <i class="bi bi-box-arrow-left"></i>
-                Sign Out
+                <i class="bi bi-box-arrow-left"></i> Sign Out
             </a>
         </div>
     </nav>
 
     <!-- ═══ MAIN CONTENT ═══ -->
     <div class="main-content" id="mainContent">
+
         <!-- Top Navbar -->
         <div class="top-navbar">
             <div class="topbar-left">
-                <button class="hamburger-btn d-lg-none" onclick="toggleSidebar()" aria-label="Menu">
+                <button class="hamburger-btn d-lg-none" onclick="toggleSidebar()" aria-label="Toggle menu">
                     <i class="bi bi-list"></i>
                 </button>
-                <div>
+                <div class="page-title-group">
                     <h1 class="page-title">{% block page_title %}Dashboard{% endblock %}</h1>
                 </div>
             </div>
             <div class="topbar-right">
                 {% if not current_user.is_superadmin and current_user.store %}
-                <span class="topbar-badge d-none d-sm-inline-flex">
-                    <i class="bi bi-shop"></i>
-                    {{ current_user.store.name }}
+                <span class="topbar-pill d-none d-sm-inline-flex">
+                    <i class="bi bi-shop"></i> {{ current_user.store.name }}
                 </span>
                 {% endif %}
-                <span class="topbar-badge d-none d-md-inline-flex">
-                    <i class="bi bi-calendar3"></i>
-                    {{ now.strftime('%d %b %Y') }}
+                <span class="topbar-pill d-none d-md-inline-flex">
+                    <i class="bi bi-calendar3"></i> {{ now.strftime('%d %b %Y') }}
                 </span>
             </div>
         </div>
 
         <!-- Content -->
         <div class="content-area">
-            <!-- Flash Messages -->
+            {# Flash Messages #}
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -207,7 +1298,9 @@
 </div>
 
 {% else %}
-{# ═══════════ LOGIN LAYOUT ═══════════ #}
+{# ═══════════════════════════════════════════════════════
+   LOGIN LAYOUT
+   ═══════════════════════════════════════════════════════ #}
 <div class="login-body">
     <div class="container">
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -234,18 +1327,18 @@
 
 <!-- Sidebar Toggle -->
 <script>
-function toggleSidebar() {
+function toggleSidebar(){
     document.getElementById('sidebar').classList.toggle('open');
     document.getElementById('sidebarOverlay').classList.toggle('active');
     document.body.classList.toggle('sidebar-open');
 }
-function closeSidebar() {
+function closeSidebar(){
     document.getElementById('sidebar').classList.remove('open');
     document.getElementById('sidebarOverlay').classList.remove('active');
     document.body.classList.remove('sidebar-open');
 }
-window.addEventListener('resize', function() { if (window.innerWidth >= 992) closeSidebar(); });
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeSidebar(); });
+window.addEventListener('resize',function(){if(window.innerWidth>=992)closeSidebar();});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeSidebar();});
 </script>
 
 {% block extra_js %}{% endblock %}
