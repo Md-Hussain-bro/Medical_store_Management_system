@@ -56,28 +56,88 @@
                         </div>
                     </div>
 
+                    <!-- ============================================== -->
+                    <!-- UPDATED HTML: Replace the quantity row section  -->
+                    <!-- ============================================== -->
+
+                    <!-- Row 4: Quantity Section (REPLACE existing quantity row) -->
                     <div class="row g-3 mb-3">
+                        <!-- For countable: "Total Packs" input (replaces old quantity) -->
                         <div class="col-12 col-sm-6">
-                            <label for="quantity" class="form-label"><span id="quantityLabel">Quantity</span> <span style="color:var(--danger)">*</span></label>
-                            <input type="number" name="quantity" id="quantity" class="form-control" required min="0" value="0" inputmode="numeric">
+                            <label for="total_packs" class="form-label">
+                                <span id="quantityLabel">Quantity</span>
+                                <span style="color:var(--danger)">*</span>
+                            </label>
+                            <!-- This input is used for packs (countable) or quantity (non-countable) -->
+                            <input type="number" name="total_packs" id="total_packs"
+                                class="form-control" required min="0" value="0"
+                                inputmode="numeric">
                             <div class="form-text" id="quantityHelp">Total units in stock</div>
                         </div>
-                        <div class="col-12 col-sm-6" id="quantityBreakdownSection" style="display:none;">
+
+                        <!-- Auto-calculated Total Units (readonly) - shown only for countable -->
+                        <div class="col-12 col-sm-6" id="totalUnitsSection" style="display:none;">
+                            <label for="total_units_display" class="form-label">
+                                Total Individual Units
+                            </label>
+                            <input type="number" id="total_units_display"
+                                class="form-control" readonly
+                                style="background:#f1f5f9; font-weight:600;">
+                            <!-- Hidden field sends actual quantity to backend -->
+                            <input type="hidden" name="quantity" id="quantity" value="0">
+                            <div class="form-text" id="totalUnitsHelp">
+                                <i class="bi bi-calculator"></i>
+                                <span id="breakdownText">Auto-calculated</span>
+                            </div>
+                        </div>
+
+                        <!-- For non-countable: keep original breakdown section hidden -->
+                        <div class="col-12 col-sm-6" id="quantityBreakdownSection"
+                            style="display:none;">
                             <label class="form-label">&nbsp;</label>
-                            <div class="alert alert-info py-2 mb-0" style="font-size: 0.82rem;">
-                                <i class="bi bi-calculator"></i> <span id="breakdownText">—</span>
+                            <div class="alert alert-info py-2 mb-0"
+                                style="font-size: 0.82rem;">
+                                <i class="bi bi-calculator"></i>
+                                <span id="nonCountableBreakdown">—</span>
                             </div>
                         </div>
                     </div>
 
+                    <!-- ============================================== -->
+                    <!-- UPDATED: Price section (add per-unit display)  -->
+                    <!-- ============================================== -->
                     <div class="row g-3 mb-3">
                         <div class="col-12 col-sm-6">
-                            <label for="purchase_price" class="form-label">Purchase Price ₹ <span style="color:var(--danger)">*</span> <span style="color:var(--text-muted);font-size:0.75rem" id="purchasePriceLabel"></span></label>
-                            <input type="number" name="purchase_price" id="purchase_price" class="form-control" required min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+                            <label for="purchase_price" class="form-label">
+                                Purchase Price ₹
+                                <span style="color:var(--danger)">*</span>
+                                <span style="color:var(--text-muted);font-size:0.75rem"
+                                    id="purchasePriceLabel"></span>
+                            </label>
+                            <input type="number" name="purchase_price"
+                                id="purchase_price" class="form-control"
+                                required min="0" step="0.01"
+                                placeholder="0.00" inputmode="decimal">
+                            <!-- NEW: per-unit price display -->
+                            <div class="form-text" id="purchasePerUnitDisplay"
+                                style="display:none; color:#10b981; font-weight:500;">
+                            </div>
                         </div>
                         <div class="col-12 col-sm-6">
-                            <label for="selling_price" class="form-label">Selling Price ₹ <span style="color:var(--danger)">*</span> <span style="color:var(--text-muted);font-size:0.75rem" id="sellingPriceLabel"></span></label>
-                            <input type="number" name="selling_price" id="selling_price" class="form-control" required min="0" step="0.01" placeholder="0.00" inputmode="decimal">
+                            <label for="selling_price" class="form-label">
+                                Selling Price ₹
+                                <span style="color:var(--danger)">*</span>
+                                <span style="color:var(--text-muted);font-size:0.75rem"
+                                    id="sellingPriceLabel"></span>
+                            </label>
+                            <input type="number" name="selling_price"
+                                id="selling_price" class="form-control"
+                                required min="0" step="0.01"
+                                placeholder="0.00" inputmode="decimal">
+                            <!-- NEW: per-unit price display -->
+                            <div class="form-text" id="sellingPerUnitDisplay"
+                                style="display:none; color:#10b981; font-weight:500;">
+                            </div>
                         </div>
                     </div>
 
@@ -99,30 +159,177 @@
 
 {% block extra_js %}
 <script>
-const COUNTABLE_TYPES=['tablet','capsule','suppository'];
-function isCountable(t){return COUNTABLE_TYPES.includes(t)}
-function toggleUnitsPerPack(){
-    const t=document.getElementById('medicine_type').value;
-    const s=document.getElementById('unitsPerPackSection');
-    const ql=document.getElementById('quantityLabel');
-    const qh=document.getElementById('quantityHelp');
-    const pl=document.getElementById('purchasePriceLabel');
-    const sl=document.getElementById('sellingPriceLabel');
-    if(isCountable(t)){s.style.display='block';ql.textContent='Total Individual Units';qh.innerHTML='<i class="bi bi-info-circle"></i> Total <strong>individual '+t+'s</strong> in stock';pl.textContent='(per '+t+')';sl.textContent='(per '+t+')';}
-    else{s.style.display='none';ql.textContent='Quantity';qh.textContent='Number of packs/bottles in stock';pl.textContent='';sl.textContent='';}
-    updateBreakdown();
+const COUNTABLE_TYPES = ['tablet', 'capsule', 'suppository'];
+
+function isCountable(t) {
+    return COUNTABLE_TYPES.includes(t);
 }
-function updateBreakdown(){
-    const t=document.getElementById('medicine_type').value;
-    const q=parseInt(document.getElementById('quantity').value)||0;
-    const u=parseInt(document.getElementById('units_per_pack').value)||0;
-    const sec=document.getElementById('quantityBreakdownSection');
-    const txt=document.getElementById('breakdownText');
-    if(isCountable(t)&&u>0&&q>0){const st=Math.floor(q/u),lo=q%u;let m=q+' '+t+'s = '+st+' strip'+(st!==1?'s':'');if(lo>0)m+=' + '+lo+' loose';txt.textContent=m;sec.style.display='block';}
-    else{sec.style.display='none';}
+
+/**
+ * toggleUnitsPerPack()
+ * Called when medicine_type changes.
+ * - Countable: show units_per_pack, total_packs input,
+ *   readonly total_units, price per pack labels
+ * - Non-countable: hide countable fields, show simple quantity
+ */
+function toggleUnitsPerPack() {
+    const t = document.getElementById('medicine_type').value;
+    const unitsSection = document.getElementById('unitsPerPackSection');
+    const totalUnitsSection = document.getElementById('totalUnitsSection');
+    const ql = document.getElementById('quantityLabel');
+    const qh = document.getElementById('quantityHelp');
+    const pl = document.getElementById('purchasePriceLabel');
+    const sl = document.getElementById('sellingPriceLabel');
+    const purchasePerUnit = document.getElementById('purchasePerUnitDisplay');
+    const sellingPerUnit = document.getElementById('sellingPerUnitDisplay');
+
+    if (isCountable(t)) {
+        // Show countable UI
+        unitsSection.style.display = 'block';
+        totalUnitsSection.style.display = 'block';
+
+        // Update labels for packs
+        ql.textContent = 'Total Packs/Strips';
+        qh.innerHTML = '<i class="bi bi-info-circle"></i> Number of <strong>packs/strips</strong> you are adding';
+
+        // Price labels → per pack
+        pl.textContent = '(per pack)';
+        sl.textContent = '(per pack)';
+
+        // Show per-unit price displays
+        if (purchasePerUnit) purchasePerUnit.style.display = '';
+        if (sellingPerUnit) sellingPerUnit.style.display = '';
+
+    } else {
+        // Hide countable UI
+        unitsSection.style.display = 'none';
+        totalUnitsSection.style.display = 'none';
+
+        // Reset labels for non-countable
+        ql.textContent = 'Quantity';
+        qh.textContent = 'Number of packs/bottles in stock';
+        pl.textContent = '';
+        sl.textContent = '';
+
+        // Hide per-unit price displays
+        if (purchasePerUnit) purchasePerUnit.style.display = 'none';
+        if (sellingPerUnit) sellingPerUnit.style.display = 'none';
+
+        // For non-countable, total_packs IS the quantity
+        syncQuantityField();
+    }
+
+    calculateTotalUnits();
+    calculatePerUnitPrices();
 }
-document.getElementById('quantity').addEventListener('input',updateBreakdown);
-document.getElementById('units_per_pack').addEventListener('input',updateBreakdown);
+
+/**
+ * calculateTotalUnits()
+ * Auto-calculates: Total Units = Units per Pack × Total Packs
+ * Updates readonly display and hidden quantity field.
+ */
+function calculateTotalUnits() {
+    const t = document.getElementById('medicine_type').value;
+    const u = parseInt(document.getElementById('units_per_pack').value) || 0;
+    const p = parseInt(document.getElementById('total_packs').value) || 0;
+    const totalUnitsDisplay = document.getElementById('total_units_display');
+    const quantityHidden = document.getElementById('quantity');
+    const breakdownText = document.getElementById('breakdownText');
+
+    if (isCountable(t)) {
+        const totalUnits = u * p;
+
+        // Update readonly display
+        if (totalUnitsDisplay) totalUnitsDisplay.value = totalUnits;
+
+        // Update hidden quantity field (sent to backend)
+        if (quantityHidden) quantityHidden.value = totalUnits;
+
+        // Update breakdown text
+        if (breakdownText) {
+            if (u > 0 && p > 0) {
+                breakdownText.innerHTML = u + ' × ' + p
+                    + ' = <strong>' + totalUnits + ' ' + t + 's</strong>';
+            } else {
+                breakdownText.textContent = 'Enter units per pack and total packs';
+            }
+        }
+    } else {
+        syncQuantityField();
+    }
+}
+
+/**
+ * syncQuantityField()
+ * For non-countable medicines, quantity = total_packs value directly
+ */
+function syncQuantityField() {
+    const packsInput = document.getElementById('total_packs');
+    const quantityHidden = document.getElementById('quantity');
+    if (quantityHidden && packsInput) {
+        quantityHidden.value = packsInput.value || 0;
+    }
+}
+
+/**
+ * calculatePerUnitPrices()
+ * Auto-calculates per-unit price from per-pack price.
+ * Price per Unit = Price per Pack ÷ Units per Pack
+ */
+function calculatePerUnitPrices() {
+    const t = document.getElementById('medicine_type').value;
+    const u = parseInt(document.getElementById('units_per_pack').value) || 0;
+    const pp = parseFloat(document.getElementById('purchase_price').value) || 0;
+    const sp = parseFloat(document.getElementById('selling_price').value) || 0;
+    const purchasePerUnit = document.getElementById('purchasePerUnitDisplay');
+    const sellingPerUnit = document.getElementById('sellingPerUnitDisplay');
+
+    if (isCountable(t) && u > 0) {
+        const ppPerUnit = (pp / u).toFixed(2);
+        const spPerUnit = (sp / u).toFixed(2);
+
+        if (purchasePerUnit) {
+            if (pp > 0) {
+                purchasePerUnit.innerHTML = '→ Per ' + t + ': ₹' + ppPerUnit;
+                purchasePerUnit.style.display = '';
+            } else {
+                purchasePerUnit.style.display = 'none';
+            }
+        }
+
+        if (sellingPerUnit) {
+            if (sp > 0) {
+                sellingPerUnit.innerHTML = '→ Per ' + t + ': ₹' + spPerUnit;
+                sellingPerUnit.style.display = '';
+            } else {
+                sellingPerUnit.style.display = 'none';
+            }
+        }
+    } else {
+        if (purchasePerUnit) purchasePerUnit.style.display = 'none';
+        if (sellingPerUnit) sellingPerUnit.style.display = 'none';
+    }
+}
+
+// ─── Event Listeners ───
+document.getElementById('total_packs')
+    .addEventListener('input', function() {
+        calculateTotalUnits();
+    });
+
+document.getElementById('units_per_pack')
+    .addEventListener('input', function() {
+        calculateTotalUnits();
+        calculatePerUnitPrices();
+    });
+
+document.getElementById('purchase_price')
+    .addEventListener('input', calculatePerUnitPrices);
+
+document.getElementById('selling_price')
+    .addEventListener('input', calculatePerUnitPrices);
+
+// Initialize on page load
 toggleUnitsPerPack();
 </script>
 {% endblock %}
