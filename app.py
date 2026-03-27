@@ -35,7 +35,6 @@ app = Flask(
 
 # Configuration
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'dev-secret-key'
-os.makedirs(app.instance_path, exist_ok=True)
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -44,7 +43,13 @@ os.makedirs(instance_folder, exist_ok=True)
 
 db_path = os.path.join(instance_folder, "pharmacy.db")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+DATABASE_URL = os.environ.get("postgresql://medical_store_db_84ee_user:kG47LYjOoDEeQFjesa5qPosJPt6wxpd0@dpg-d73es0n5r7bs73fjkgeg-a.oregon-postgres.render.com/medical_store_db_84ee")
+
+if DATABASE_URL:
+    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+else:
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # Initialize extensions
@@ -161,6 +166,9 @@ def init_db():
     db.session.commit()
     print("Database initialized successfully!")
 
+with app.app_context():
+    db.create_all()
+    print("TABLES CREATED IN DATABASE")
 
 if not os.path.exists(db_path):
     with app.app_context():
@@ -267,7 +275,6 @@ def admin_dashboard():
 @app.route('/admin/stores')
 @superadmin_required
 def admin_stores():
-    """List all stores"""
     stores = Store.query.order_by(Store.name).all()
     return render_template('admin/stores.html', stores=stores)
 
