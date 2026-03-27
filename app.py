@@ -173,7 +173,7 @@ with app.app_context():
 if not os.path.exists(db_path):
     with app.app_context():
         init_db()
-
+        
 
 # Context processor
 @app.context_processor
