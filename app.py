@@ -34,6 +34,7 @@ app = Flask(
 )
 
 # Configuration
+
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY') or 'dev-secret-key'
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
