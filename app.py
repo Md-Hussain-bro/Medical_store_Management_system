@@ -43,14 +43,14 @@ os.makedirs(instance_folder, exist_ok=True)
 
 db_path = os.path.join(instance_folder, "pharmacy.db")
 
-DATABASE_URL = os.environ.get("postgresql://medical_store_db_84ee_user:kG47LYjOoDEeQFjesa5qPosJPt6wxpd0@dpg-d73es0n5r7bs73fjkgeg-a.oregon-postgres.render.com/medical_store_db_84ee")
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
-if DATABASE_URL:
-    app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
-else:
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///{db_path}"
+if not DATABASE_URL:
+    raise Exception("DATABASE_URL not set")
 
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 
 # Initialize extensions
 db.init_app(app)
