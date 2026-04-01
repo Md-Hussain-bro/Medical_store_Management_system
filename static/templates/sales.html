@@ -321,96 +321,195 @@ function openAddModal(med) {
 }
 
 // ═══════════════════════════════════════════
-// RECALC SUBTOTAL
+// RECALC SUBTOTAL (FIXED)
 // ═══════════════════════════════════════════
 function recalcModalSubtotal() {
     if (!currentMedicine) return;
+
     const c = isCountable(currentMedicine.medicine_type);
     const upp = currentMedicine.units_per_pack || 0;
-    const price = currentMedicine.selling_price;
+
+    // 💥 FIX: price calculation
+    let price;
+    if (c && upp > 0) {
+        price = currentMedicine.selling_price / upp; // per unit
+    } else {
+        price = currentMedicine.selling_price; // per pack
+    }
+
     const stock = currentMedicine.quantity;
     const packs = parseInt(quantityInput.value) || 0;
     const loose = parseInt(unitCountInput.value) || 0;
+
     const qE = document.getElementById('quantityError');
     const uE = document.getElementById('unitError');
-    qE.style.display = 'none'; uE.style.display = 'none';
+    qE.style.display = 'none';
+    uE.style.display = 'none';
 
     let sub = 0;
+
     if (c) {
         const tot = (packs * upp) + loose;
         sub = tot * price;
+
         document.getElementById('totalUnitsSelling').textContent = tot;
+
         let bd = '';
         if (packs > 0 && upp > 0) {
             bd = `(${packs} strip${packs>1?'s':''} × ${upp}`;
             if (loose > 0) bd += ` + ${loose} loose`;
             bd += ')';
-        } else if (loose > 0) bd = `(${loose} loose)`;
+        } else if (loose > 0) {
+            bd = `(${loose} loose)`;
+        }
+
         document.getElementById('totalUnitsBreakdown').textContent = bd;
-        if (tot > stock) { uE.textContent = `Exceeds stock (${stock})`; uE.style.display = 'block'; }
-        if (packs < 0) { qE.textContent = 'Cannot be negative'; qE.style.display = 'block'; }
-        if (loose < 0) { uE.textContent = 'Cannot be negative'; uE.style.display = 'block'; }
+
+        if (tot > stock) {
+            uE.textContent = `Exceeds stock (${stock})`;
+            uE.style.display = 'block';
+        }
+
     } else {
         sub = packs * price;
-        if (packs > stock) { qE.textContent = `Only ${stock} available`; qE.style.display = 'block'; }
-        if (packs < 1) { qE.textContent = 'Min 1 required'; qE.style.display = 'block'; }
+
+        if (packs > stock) {
+            qE.textContent = `Only ${stock} available`;
+            qE.style.display = 'block';
+        }
+
+        if (packs < 1) {
+            qE.textContent = 'Min 1 required';
+            qE.style.display = 'block';
+        }
     }
+
     document.getElementById('subtotal').textContent = sub.toFixed(2);
 }
 
-quantityInput.addEventListener('input', recalcModalSubtotal);
-unitCountInput.addEventListener('input', recalcModalSubtotal);
 
 // ═══════════════════════════════════════════
-// ADD TO CART
+// ADD TO CART (FIXED)
 // ═══════════════════════════════════════════
 document.getElementById('addToCartBtn').addEventListener('click', function() {
     if (!currentMedicine) return;
-    const mid = currentMedicine.id, name = currentMedicine.name, batch = currentMedicine.batch_no;
-    const price = currentMedicine.selling_price, stock = currentMedicine.quantity;
+
+    const mid = currentMedicine.id;
+    const name = currentMedicine.name;
+    const batch = currentMedicine.batch_no;
+
     const c = isCountable(currentMedicine.medicine_type);
-    const upp = currentMedicine.units_per_pack || 0, mt = currentMedicine.medicine_type;
+    const upp = currentMedicine.units_per_pack || 0;
+    const stock = currentMedicine.quantity;
+    const mt = currentMedicine.medicine_type;
+
+    // 💥 FIX: correct price logic
+    let price;
+    if (c && upp > 0) {
+        price = currentMedicine.selling_price / upp;
+    } else {
+        price = currentMedicine.selling_price;
+    }
+
     const packs = parseInt(quantityInput.value) || 0;
     const loose = parseInt(unitCountInput.value) || 0;
 
     let cQ = 0, cU = 0, sub = 0, disp = '';
+
     if (c) {
         const tot = (packs * upp) + loose;
-        if (tot < 1) { alert('Enter at least 1 unit.'); return; }
-        if (tot > stock) { alert(`Only ${stock} available.`); return; }
-        cU = tot; sub = tot * price;
-        if (packs > 0 && loose > 0) disp = `${packs}s + ${loose} = ${tot}`;
-        else if (packs > 0) disp = `${packs} strip${packs>1?'s':''} (${tot})`;
-        else disp = `${tot} ${mt}${tot>1?'s':''}`;
+
+        if (tot < 1) {
+            alert('Enter at least 1 unit.');
+            return;
+        }
+
+        if (tot > stock) {
+            alert(`Only ${stock} available.`);
+            return;
+        }
+
+        cU = tot;
+        sub = tot * price;
+
+        if (packs > 0 && loose > 0) {
+            disp = `${packs}s + ${loose} = ${tot}`;
+        } else if (packs > 0) {
+            disp = `${packs} strip${packs>1?'s':''} (${tot})`;
+        } else {
+            disp = `${tot} ${mt}${tot>1?'s':''}`;
+        }
+
     } else {
-        if (packs < 1) { alert('Min 1 required.'); return; }
-        if (packs > stock) { alert(`Only ${stock} available.`); return; }
-        cQ = packs; sub = packs * price; disp = `${packs}`;
+        if (packs < 1) {
+            alert('Min 1 required.');
+            return;
+        }
+
+        if (packs > stock) {
+            alert(`Only ${stock} available.`);
+            return;
+        }
+
+        cQ = packs;
+        sub = packs * price;
+        disp = `${packs}`;
     }
 
     const ei = cart.findIndex(i => i.medicine_id === mid);
+
     if (ei > -1) {
         if (c) {
             const nu = cart[ei].units + cU;
-            if (nu > stock) { alert(`Max ${stock}.`); return; }
-            cart[ei].units = nu; cart[ei].subtotal = nu * price;
+
+            if (nu > stock) {
+                alert(`Max ${stock}.`);
+                return;
+            }
+
+            cart[ei].units = nu;
+            cart[ei].subtotal = nu * price;
+            cart[ei].unit_price = price; // 💥 important fix
+
             cart[ei].display_qty = `${nu} ${mt}${nu>1?'s':''}`;
+
         } else {
             const nq = cart[ei].quantity + cQ;
-            if (nq > stock) { alert(`Max ${stock}.`); return; }
-            cart[ei].quantity = nq; cart[ei].subtotal = nq * price;
+
+            if (nq > stock) {
+                alert(`Max ${stock}.`);
+                return;
+            }
+
+            cart[ei].quantity = nq;
+            cart[ei].subtotal = nq * price;
+            cart[ei].unit_price = price; // 💥 important fix
+
             cart[ei].display_qty = `${nq}`;
         }
+
     } else {
         cart.push({
-            medicine_id: mid, name, batch_no: batch, unit_price: price,
-            quantity: cQ, units: cU, max_stock: stock, subtotal: sub,
-            medicine_type: mt, units_per_pack: upp, is_countable: c, display_qty: disp
+            medicine_id: mid,
+            name,
+            batch_no: batch,
+            unit_price: price, // 💥 correct now
+            quantity: cQ,
+            units: cU,
+            max_stock: stock,
+            subtotal: sub,
+            medicine_type: mt,
+            units_per_pack: upp,
+            is_countable: c,
+            display_qty: disp
         });
     }
+
     updateCartDisplay();
+
     bootstrap.Modal.getInstance(document.getElementById('addToCartModal')).hide();
-    searchInput.value = ''; searchResults.innerHTML = '';
+    searchInput.value = '';
+    searchResults.innerHTML = '';
 });
 
 // ═══════════════════════════════════════════
