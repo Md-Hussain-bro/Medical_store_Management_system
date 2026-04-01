@@ -270,54 +270,90 @@ searchInput.addEventListener('input', function() {
 // ═══════════════════════════════════════════
 function openAddModal(med) {
     currentMedicine = med;
-    const c = isCountable(med.medicine_type);
-    const upp = med.units_per_pack || 0;
 
+    const c = isCountable(med.medicine_type);
+    const upp = parseInt(med.units_per_pack) || 0;
+
+    // ── Basic Info ──
     document.getElementById('selectedMedicineId').value = med.id;
     document.getElementById('selectedMedicineType').value = med.medicine_type;
     document.getElementById('selectedUnitsPerPack').value = upp;
+
     document.getElementById('selectedMedicineName').textContent = med.name;
     document.getElementById('selectedBatch').textContent = med.batch_no;
     document.getElementById('selectedPrice').textContent = med.selling_price.toFixed(2);
+
     document.getElementById('selectedTypeDisplay').textContent =
         med.medicine_type.charAt(0).toUpperCase() + med.medicine_type.slice(1);
+
     document.getElementById('selectedStock').textContent = med.quantity;
     document.getElementById('stockUnitLabel').textContent = c ? ' units' : ' packs';
 
+    // ── Units per pack display ──
     const uppInfo = document.getElementById('unitsPerPackInfo');
     if (c && upp > 0) {
         uppInfo.style.display = 'inline';
         document.getElementById('unitsPerPackValue').textContent = upp + ' units';
-    } else { uppInfo.style.display = 'none'; }
+    } else {
+        uppInfo.style.display = 'none';
+    }
 
+    // ── Input Sections ──
     if (c) {
         document.getElementById('quantityLabel').textContent = 'Number of Strips/Packs';
+
         if (upp > 0) {
-            document.getElementById('packHelp').textContent = `Each strip = ${upp} ${med.medicine_type}s`;
+            document.getElementById('packHelp').textContent =
+                `Each strip = ${upp} ${med.medicine_type}s`;
             packQuantitySection.style.display = 'block';
-        } else { packQuantitySection.style.display = 'none'; }
+        } else {
+            packQuantitySection.style.display = 'none';
+        }
+
         unitsSection.style.display = 'block';
+
         document.getElementById('unitLabel').textContent =
             med.medicine_type === 'capsule' ? 'Loose Capsules' : 'Loose Tablets';
-        document.getElementById('unitHelp').textContent = `Individual ${med.medicine_type}s`;
+
+        document.getElementById('unitHelp').textContent =
+            `Individual ${med.medicine_type}s`;
+
         totalUnitsInfo.style.display = 'block';
+
+        // 💥 reset values
         quantityInput.value = 0;
         unitCountInput.value = 0;
+
         quantityInput.max = upp > 0 ? Math.floor(med.quantity / upp) : 0;
+
     } else {
         document.getElementById('quantityLabel').textContent = 'Quantity';
         document.getElementById('packHelp').textContent = '';
+
         packQuantitySection.style.display = 'block';
         unitsSection.style.display = 'none';
         totalUnitsInfo.style.display = 'none';
+
         quantityInput.value = 1;
         quantityInput.max = med.quantity;
     }
 
+    // ── Clear errors ──
     document.getElementById('quantityError').style.display = 'none';
     document.getElementById('unitError').style.display = 'none';
-    recalcModalSubtotal();
-    new bootstrap.Modal(document.getElementById('addToCartModal')).show();
+
+    // 💥 IMPORTANT: bind events fresh
+    quantityInput.oninput = recalcModalSubtotal;
+    unitCountInput.oninput = recalcModalSubtotal;
+
+    // 💥 Force calculation after modal opens
+    setTimeout(() => {
+        recalcModalSubtotal();
+    }, 100);
+
+    // ── Show modal ──
+    const modal = new bootstrap.Modal(document.getElementById('addToCartModal'));
+    modal.show();
 }
 
 // ═══════════════════════════════════════════
