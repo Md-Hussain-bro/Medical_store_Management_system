@@ -331,10 +331,16 @@ function recalcModalSubtotal() {
 
     // 💥 FIX: price calculation
     let price;
-    if (c && upp > 0) {
-        price = currentMedicine.selling_price / upp; // per unit
+
+    if (c && upp && upp > 0) {
+        price = currentMedicine.selling_price / upp;
     } else {
-        price = currentMedicine.selling_price; // per pack
+        price = currentMedicine.selling_price;
+    }
+
+    // 💥 safety
+    if (!price || isNaN(price)) {
+        price = 0;
     }
 
     const stock = currentMedicine.quantity;
