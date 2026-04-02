@@ -56,6 +56,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 # Initialize extensions
 db.init_app(app)
 
+with app.app_context():
+    db.create_all()
+
+    if not User.query.filter_by(username='admin').first():
+        init_db()
+
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -166,10 +172,6 @@ def init_db():
 
     db.session.commit()
     print("Database initialized successfully!")
-
-if not os.path.exists(db_path):
-    with app.app_context():
-        init_db()
 
 
 # Context processor
